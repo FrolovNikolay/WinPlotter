@@ -1,4 +1,5 @@
-WinPlotter/*.sdf
-WinPlotter/*.suo
+# Visual Studio common files
+*.sdf
+*.suo
+Debug/
 WinPlotter/Debug/
-WinPlotter/WinPlotter/Debug/
