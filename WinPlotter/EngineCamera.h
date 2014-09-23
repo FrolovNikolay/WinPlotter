@@ -16,11 +16,11 @@ public:
 
 private:
 	// Положение камеры в трёхмерном пространстве и матрица переноса
-	C3DPoint position;
-	CMatrix44 movingMatrix;
+	C3DPoint Position;
+	CMatrix44 MovingMatrix;
 
 	// Углы поворота камеры (в радианах) и их обратные матрицы поворота
-	double angleX, angleY, angleZ;
+	double AngleX, AngleY, AngleZ;
 
 
 	CMatrix44 inverseRotateMatrixX, inverseRotateMatrixY, inverseRotateMatrixZ;
@@ -29,17 +29,17 @@ private:
 	void updateInverseRotateMatrixZ(double angleZ);
 
 	// Общая вычисленная матрица преобразования координат трёхмерного пространства в координаты камеры
-	CMatrix44 transfromMatrix;
+	CMatrix44 TransfromMatrix;
 	// Обновляет эту матрицу в случае изменения положения и вращения камеры
 	void updateTransformMatrix();
 
 	// Расстояние обзора
-	double viewDistance;
+	double ViewDistance;
 
 	// Ближняя и дальная плоскости отсечения (координаты по Z)
-	double nearZ, farZ;
+	double NearZ, FarZ;
 
 	// Размер проекции (разрешение окна, куда будет генерироваться картинка)
-	int clientWidth, clientHeight;
+	int ClientWidth, ClientHeight;
 };
 

@@ -2,9 +2,9 @@
 #include <cmath>
 
 CEngineCamera::CEngineCamera() :
-angleX(0), angleY(0), angleZ(1)
+AngleX(0), AngleY(0), AngleZ(1)
 {
-	position = C3DPoint(0, 0, 0);
+	Position = C3DPoint();
 	updateInverseRotateMatrixX(0);
 	updateInverseRotateMatrixY(0);
 	updateInverseRotateMatrixZ(1);
@@ -17,12 +17,12 @@ CEngineCamera::~CEngineCamera()
 }
 
 void CEngineCamera::SetPosition(C3DPoint point) {
-	position = point;
-	movingMatrix = CMatrix44(
+	Position = point;
+	MovingMatrix = CMatrix44(
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
-		-position.x, -position.y, -position.z, 1
+		-Position.X, -Position.Y, -Position.Z, 1
 	);
 }
 
@@ -55,9 +55,9 @@ void CEngineCamera::updateInverseRotateMatrixZ(double angle) {
 }
 
 void CEngineCamera::updateTransformMatrix() {
-	transfromMatrix = CMatrix44();
-	transfromMatrix.multiplyAt(movingMatrix);
-	transfromMatrix.multiplyAt(inverseRotateMatrixY);
-	transfromMatrix.multiplyAt(inverseRotateMatrixX);
-	transfromMatrix.multiplyAt(inverseRotateMatrixZ);
+	TransfromMatrix = CMatrix44();
+	TransfromMatrix.multiplyAt(MovingMatrix);
+	TransfromMatrix.multiplyAt(inverseRotateMatrixY);
+	TransfromMatrix.multiplyAt(inverseRotateMatrixX);
+	TransfromMatrix.multiplyAt(inverseRotateMatrixZ);
 }

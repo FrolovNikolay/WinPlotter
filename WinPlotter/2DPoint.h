@@ -3,12 +3,10 @@
 /*
 * Двухмерная точка на плоскости (необходима для отрисовки)
 */
-class C2DPoint
+struct C2DPoint
 {
 public:
-	double x, y;
-	C2DPoint();
-	C2DPoint(double _x, double _y);
-	~C2DPoint();
+	double X, Y;
+	C2DPoint(double _x = 0, double _y = 0);
 };
 

@@ -2,11 +2,8 @@
 class C3DPoint
 {
 public:
-	double x, y, z;
+	double X, Y, Z;
 
-	C3DPoint();
-	C3DPoint(double _x, double _y, double _z);
-
-	~C3DPoint();
+	C3DPoint(double _x = 0, double _y = 0, double _z = 0);
 };
 
