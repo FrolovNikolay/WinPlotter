@@ -1,0 +1,383 @@
+/*
+author: Timur Khusaenov
+class: CWinMain
+description:
+	Класс реализует интерфейс, применяемый в приложении WinPlotter.
+	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
+*/
+
+#include "CWinMain.h"
+#include <Windows.h>
+#include "resource.h"
+
+WNDPROC CWinMain::defButtonProc = 0;
+WNDPROC CWinMain::defMouseProc = 0;
+
+bool CWinMain::registerClass( HINSTANCE hInstance )
+{
+	WNDCLASSEX windowClass;
+	::ZeroMemory( &windowClass, sizeof( WNDCLASSEX ) );
+	windowClass.cbSize = sizeof( WNDCLASSEX );
+	windowClass.style = CS_GLOBALCLASS | CS_VREDRAW | CS_HREDRAW;
+	windowClass.lpfnWndProc = CWinMain::windowProc;
+	windowClass.hInstance = hInstance;
+	windowClass.lpszClassName = L"CWinMain";
+	windowClass.lpszMenuName = MAKEINTRESOURCE( IDR_MENU );
+
+	ATOM res = ::RegisterClassEx( &windowClass );
+
+	return ( res != 0 );
+}
+
+HWND CWinMain::create( HINSTANCE hInstance )
+{
+	handle = ::CreateWindow( L"CWinMain", L"CWinMain", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, this );
+	return handle;
+}
+
+void CWinMain::show( int cmdShow )
+{
+	::ShowWindow( handle, cmdShow );
+}
+
+HWND createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id )
+{
+	static bool init = false;
+	HINSTANCE hInstance = reinterpret_cast< HINSTANCE >( GetWindowLong( parent, GWL_HINSTANCE ) );
+	HWND handle = CreateWindow( L"BUTTON", title, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, X, Y, CWinMain::Size, CWinMain::Size, parent, ( HMENU )ID_BUTTON_MOVE_BOT, hInstance, 0 );
+	if( init == false ) {
+		CWinMain::defButtonProc = ( WNDPROC )SetWindowLong( handle, GWL_WNDPROC, ( LONG )CWinMain::buttonProc );
+		init = true;
+	} else {
+		SetWindowLong( handle, GWL_WNDPROC, ( LONG )CWinMain::buttonProc );
+	}
+	return handle;
+}
+
+LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	HWND parent = GetParent( hWnd );
+	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( parent, GWL_USERDATA ) );
+	switch( uMsg ) {
+		case WM_LBUTTONDOWN:
+			wnd->IdentifyCommand( hWnd );
+			break;
+		case WM_LBUTTONUP:
+			wnd->curMove = false;
+			wnd->moveDirection = D_None;
+			wnd->rotateDirection = D_None;
+			wnd->zoom = Z_None;
+			break;
+	}
+	return CallWindowProc( defButtonProc, hWnd, uMsg, wParam, lParam );
+}
+
+LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	HWND parent = GetParent( hWnd );
+	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( parent, GWL_USERDATA ) );
+	switch( uMsg ) {
+		case WM_LBUTTONDOWN:
+			SetCapture( hWnd );
+			GetCursorPos( &(wnd->oldCurPos) );
+			wnd->curMove = true;
+			break;
+		case WM_LBUTTONUP:
+			ReleaseCapture();
+			wnd->curMove = false;
+			break;
+	}
+	return CallWindowProc( defMouseProc, hWnd, uMsg, wParam, lParam );
+}
+
+void CWinMain::IdentifyCommand( HWND hWnd )
+{
+	if( hWnd == hButtonMoveBot ) {
+		moveDirection = D_Bot;
+	} else if( hWnd == hButtonMoveTop ) {
+		moveDirection = D_Top;
+	} else if( hWnd == hButtonMoveRight ) {
+		moveDirection = D_Right;
+	} else if( hWnd == hButtonMoveLeft ) {
+		moveDirection = D_Left;
+	} else if( hWnd == hButtonRotateDown ) {
+		rotateDirection = D_Bot;
+	} else if( hWnd == hButtonRotateUp ) {
+		rotateDirection = D_Top;
+	} else if( hWnd == hButtonRotateLeft ) {
+		rotateDirection = D_Left;
+	} else if( hWnd == hButtonRotateRight ) {
+		rotateDirection = D_Right;
+	} else if( hWnd == hButtonZoomMinus ) {
+		zoom = Z_Minus;
+	} else if( hWnd == hButtonZoomPlus ) {
+		zoom = Z_Plus;
+	}
+}
+
+void setButtonPos( HWND hWnd, int X, int Y )
+{
+	SetWindowPos( hWnd, HWND_TOP, X, Y, CWinMain::Size, CWinMain::Size, SWP_NOOWNERZORDER );
+}
+
+LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	if( uMsg == WM_NCCREATE ) {
+		SetWindowLong( hWnd, GWL_USERDATA, reinterpret_cast<LONG>( ( reinterpret_cast<CREATESTRUCT*>( lParam ) )->lpCreateParams ) );
+	}
+	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( hWnd, GWL_USERDATA ) );
+
+	switch( uMsg ) {
+		case WM_NCCREATE:
+			wnd->timer = SetTimer( hWnd, 0, 10, 0 );
+			break;
+		case WM_CREATE:
+			wnd->OnCreate( hWnd );
+			return 0;
+		case WM_SIZE:
+			wnd->ResizeChildrens();
+			return 0;
+		case WM_DESTROY:
+			wnd->OnDestroy();
+			return 0;
+		case WM_TIMER:
+			wnd->Move();
+			return 0;
+		case WM_COMMAND:
+			return wnd->OnCommand( wParam, lParam );
+		case WM_KEYDOWN:
+			return wnd->OnKeyDown( wParam, lParam );
+		case WM_KEYUP:
+			return wnd->OnKeyUp( wParam, lParam );
+		case WM_MOUSEWHEEL:
+			wnd->winPlotter.zoom( GET_WHEEL_DELTA_WPARAM( wParam ) / MouseWheelSens );
+			return 0;
+	}
+
+	return DefWindowProc( hWnd, uMsg, wParam, lParam );
+}
+
+void CWinMain::Move()
+{
+	switch( moveDirection ) {
+		case D_None:
+			break;
+		case D_Top:
+			winPlotter.moveY( -1 );
+			break;
+		case D_Bot:
+			winPlotter.moveY();
+			break;
+		case D_Left:
+			winPlotter.moveX( -1 );
+			break;
+		case D_Right:
+			winPlotter.moveX();
+			break;
+	}
+
+	switch( rotateDirection ) {
+		case D_None:
+			break;
+		case D_Top:
+			winPlotter.rotateY( -1 );
+			break;
+		case D_Bot:
+			winPlotter.rotateY();
+			break;
+		case D_Left:
+			winPlotter.rotateX( -1 );
+			break;
+		case D_Right:
+			winPlotter.rotateX();
+			break;
+	}
+
+	switch( zoom ) {
+		case Z_None:
+			break;
+		case Z_Plus:
+			winPlotter.zoom();
+			break;
+		case Z_Minus:
+			winPlotter.zoom( -1 );
+			break;
+	}
+	if( curMove ) {
+		GetCursorPos( &curPos );
+		winPlotter.rotateX( oldCurPos.x - curPos.x );
+		winPlotter.rotateY( oldCurPos.y - curPos.y );
+		oldCurPos = curPos;
+	}
+}
+
+void CWinMain::OnDestroy() {
+	KillTimer( handle, timer );
+	::PostQuitMessage( 0 );
+}
+
+void CWinMain::OnCreate( HWND hWnd ) {
+	HINSTANCE hInstance = reinterpret_cast<HINSTANCE>( GetWindowLong( hWnd, GWL_HINSTANCE ) );
+	
+	RECT rect;
+	GetClientRect( hWnd, &rect );
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+
+	hChild = winPlotter.create( hInstance, hWnd );
+	
+	if ( hChild == 0 ) {
+		MessageBox( 0, L"WTF", L"WTF", MB_OK );
+	}
+	winPlotter.show( SW_SHOW );
+	SetWindowPos( hChild, HWND_BOTTOM, 0, 0, width, height, 0 );
+	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hChild, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
+
+
+	hButtonMoveBot = createButton( L".", 50, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
+	hButtonMoveTop = createButton( L"^", 50, height - 75, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
+	hButtonMoveLeft = createButton( L"<", 25, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
+	hButtonMoveRight = createButton( L">", 75, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
+
+	hButtonRotateUp = createButton( L"^", width - 75, height - 75, hWnd, ( HMENU )ID_BUTTON_ROTATE_UP );
+	hButtonRotateDown = createButton( L".", width - 75, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
+	hButtonRotateLeft = createButton( L"<", width - 100, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_LEFT );
+	hButtonRotateRight = createButton( L">", width - 50, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_RIGHT );
+
+	hButtonZoomMinus = createButton( L".", width - 50, 50, hWnd, ( HMENU )ID_BUTTON_ZOOM_OUT );
+	hButtonZoomPlus = createButton( L"^", width - 50, 25, hWnd, ( HMENU )ID_BUTTON_ZOOM_ON );
+}
+
+void CWinMain::ResizeChildrens() {
+	RECT rect;
+	GetClientRect( handle, &rect );
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	SetWindowPos( hChild, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
+
+	setButtonPos( hButtonMoveBot, 50, height - 50 );
+	setButtonPos( hButtonMoveTop, 50, height - 75 );
+	setButtonPos( hButtonMoveLeft, 25, height - 50 );
+	setButtonPos( hButtonMoveRight, 75, height - 50 );
+
+	setButtonPos( hButtonRotateUp, width - 75, height - 75 );
+	setButtonPos( hButtonRotateDown, width - 75, height - 50 );
+	setButtonPos( hButtonRotateLeft, width - 100, height - 50 );
+	setButtonPos( hButtonRotateRight, width - 50, height - 50 );
+
+	setButtonPos( hButtonZoomMinus, width - 50, 50 );
+	setButtonPos( hButtonZoomPlus, width - 50, 25 );
+}
+
+LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
+{
+	int wmId = LOWORD( wParam );
+
+	switch( wmId ) {
+		case ID_NEWFORMULA:
+			ShowFormulaForm();
+			break;
+		case ID_CLEAR:
+			winPlotter.clear();
+			break;
+	}
+	return DefWindowProc( handle, WM_COMMAND, wParam, lParam );
+}
+
+void CWinMain::ShowFormulaForm()
+{
+	if( hFormulaForm == 0 ) {
+		hFormulaForm = ::CreateDialog( 0, MAKEINTRESOURCE( IDD_FORMULA_FORM ), handle, formulaDialogProc );
+		ShowWindow( hFormulaForm, SW_SHOW );
+	}
+}
+
+BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
+{
+	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( ::GetParent( hWnd ), GWL_USERDATA ) );
+
+	switch( uMsg ) {
+		case WM_COMMAND:
+			return wnd->OnFormCommand( wParam, lParam );
+		case WM_CLOSE:
+			EndDialog( hWnd, 0 );
+			DestroyWindow( hWnd );
+			wnd->hFormulaForm = 0;
+			return TRUE;
+	}
+	return FALSE;
+}
+
+LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
+{
+	int wmId = LOWORD( wParam );
+
+	switch( wmId ) {
+		case IDOK:
+			TakeFormula();
+			EndDialog( hFormulaForm, 0 );
+			DestroyWindow( hFormulaForm );
+			hFormulaForm = 0;
+			return TRUE;
+		case IDCANCEL:
+			EndDialog( hFormulaForm, 0 );
+			DestroyWindow( hFormulaForm );
+			hFormulaForm = 0;
+			return TRUE;
+	}
+	return FALSE;
+}
+
+void CWinMain::TakeFormula()
+{
+	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
+	TCHAR* buff = new TCHAR[textLength + 1];
+	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
+	// отправить строку Паше
+}
+
+LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )
+{
+	switch( wParam ) {
+		case VK_LEFT:
+			moveDirection = D_Left;
+			return 0;
+		case VK_RIGHT:
+			moveDirection = D_Right;
+			return 0;
+		case VK_UP:
+			moveDirection = D_Top;
+			return 0;
+		case VK_DOWN:
+			moveDirection = D_Bot;
+			return 0;
+	}
+	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
+}
+
+LRESULT CWinMain::OnKeyUp( WPARAM wParam, LPARAM lParam )
+{
+	switch( wParam ) {
+		case VK_LEFT:
+			if( moveDirection == D_Left ) {
+				moveDirection = D_None;
+			}
+			return 0;
+		case VK_RIGHT:
+			if( moveDirection == D_Right ) {
+				moveDirection = D_None;
+			}
+			return 0;
+		case VK_UP:
+			if( moveDirection == D_Top ) {
+				moveDirection = D_None;
+			}
+			return 0;
+		case VK_DOWN:
+			if( moveDirection == D_Bot ) {
+				moveDirection = D_None;
+			}
+			return 0;
+	}
+	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
+}
