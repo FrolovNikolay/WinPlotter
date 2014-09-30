@@ -9,6 +9,7 @@ description:
 #include "CWinMain.h"
 #include <Windows.h>
 #include "resource.h"
+#include <assert.h>
 
 WNDPROC CWinMain::defButtonProc = 0;
 WNDPROC CWinMain::defMouseProc = 0;
@@ -54,6 +55,9 @@ HWND createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id )
 	return handle;
 }
 
+/* 
+обертка над дефолтным обработчиком нажатия кнопок
+*/
 LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	HWND parent = GetParent( hWnd );
@@ -68,10 +72,14 @@ LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			wnd->rotateDirection = D_None;
 			wnd->zoom = Z_None;
 			break;
+			// assert не нужен, так как обертка
 	}
 	return CallWindowProc( defButtonProc, hWnd, uMsg, wParam, lParam );
 }
 
+/*
+обертка над оброботчиком дочернего окна 
+*/
 LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	HWND parent = GetParent( hWnd );
@@ -86,6 +94,7 @@ LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			ReleaseCapture();
 			wnd->curMove = false;
 			break;
+			// assert не нужен, так как обертка
 	}
 	return CallWindowProc( defMouseProc, hWnd, uMsg, wParam, lParam );
 }
@@ -112,6 +121,8 @@ void CWinMain::IdentifyCommand( HWND hWnd )
 		zoom = Z_Minus;
 	} else if( hWnd == hButtonZoomPlus ) {
 		zoom = Z_Plus;
+	} else {
+		assert( false );
 	}
 }
 
@@ -120,6 +131,9 @@ void setButtonPos( HWND hWnd, int X, int Y )
 	SetWindowPos( hWnd, HWND_TOP, X, Y, CWinMain::Size, CWinMain::Size, SWP_NOOWNERZORDER );
 }
 
+/*
+обработчик главного окна
+*/
 LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( uMsg == WM_NCCREATE ) {
@@ -292,6 +306,9 @@ void CWinMain::ShowFormulaForm()
 	}
 }
 
+/*
+обработчик диалогового окна ввода формулы
+*/
 BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( ::GetParent( hWnd ), GWL_USERDATA ) );
