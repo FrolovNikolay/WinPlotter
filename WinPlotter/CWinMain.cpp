@@ -6,6 +6,8 @@ description:
 	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
 */
 
+const int indentFromBorder = 25;
+
 #include "CWinMain.h"
 #include <Windows.h>
 #include "resource.h"
@@ -41,11 +43,11 @@ void CWinMain::show( int cmdShow )
 	::ShowWindow( handle, cmdShow );
 }
 
-HWND createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id )
+HWND CWinMain::createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id )
 {
 	static bool init = false;
 	HINSTANCE hInstance = reinterpret_cast< HINSTANCE >( GetWindowLong( parent, GWL_HINSTANCE ) );
-	HWND handle = CreateWindow( L"BUTTON", title, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, X, Y, CWinMain::Size, CWinMain::Size, parent, ( HMENU )ID_BUTTON_MOVE_BOT, hInstance, 0 );
+	HWND handle = CreateWindow( L"BUTTON", title, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, X, Y, buttonSize, buttonSize, parent, ( HMENU )ID_BUTTON_MOVE_BOT, hInstance, 0 );
 	if( init == false ) {
 		CWinMain::defButtonProc = ( WNDPROC )SetWindowLong( handle, GWL_WNDPROC, ( LONG )CWinMain::buttonProc );
 		init = true;
@@ -126,9 +128,9 @@ void CWinMain::IdentifyCommand( HWND hWnd )
 	}
 }
 
-void setButtonPos( HWND hWnd, int X, int Y )
+void CWinMain::setButtonPos( HWND hWnd, int X, int Y )
 {
-	SetWindowPos( hWnd, HWND_TOP, X, Y, CWinMain::Size, CWinMain::Size, SWP_NOOWNERZORDER );
+	SetWindowPos( hWnd, HWND_TOP, X, Y, buttonSize, buttonSize, SWP_NOOWNERZORDER );
 }
 
 /*
@@ -164,7 +166,7 @@ LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		case WM_KEYUP:
 			return wnd->OnKeyUp( wParam, lParam );
 		case WM_MOUSEWHEEL:
-			wnd->winPlotter.zoom( GET_WHEEL_DELTA_WPARAM( wParam ) / MouseWheelSens );
+			wnd->winPlotter.zoom( GET_WHEEL_DELTA_WPARAM( wParam ) * wnd->MouseWheelSens );
 			return 0;
 	}
 
@@ -247,19 +249,27 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	SetWindowPos( hChild, HWND_BOTTOM, 0, 0, width, height, 0 );
 	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hChild, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
 
+	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен 2 * размеру кнопки
+	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен 2 * размеру кнопки
 
-	hButtonMoveBot = createButton( L".", 50, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
-	hButtonMoveTop = createButton( L"^", 50, height - 75, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
-	hButtonMoveLeft = createButton( L"<", 25, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
-	hButtonMoveRight = createButton( L">", 75, height - 50, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
+	hButtonMoveBot = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
+	hButtonMoveTop = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
+	hButtonMoveLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
+	hButtonMoveRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
 
-	hButtonRotateUp = createButton( L"^", width - 75, height - 75, hWnd, ( HMENU )ID_BUTTON_ROTATE_UP );
-	hButtonRotateDown = createButton( L".", width - 75, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
-	hButtonRotateLeft = createButton( L"<", width - 100, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_LEFT );
-	hButtonRotateRight = createButton( L">", width - 50, height - 50, hWnd, ( HMENU )ID_BUTTON_ROTATE_RIGHT );
+	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ так как положение кнопки считается от левого верхнего угла
+	// buttonBlockPosY = height - buttonSize - indentFromBorder;
 
-	hButtonZoomMinus = createButton( L".", width - 50, 50, hWnd, ( HMENU )ID_BUTTON_ZOOM_OUT );
-	hButtonZoomPlus = createButton( L"^", width - 50, 25, hWnd, ( HMENU )ID_BUTTON_ZOOM_ON );
+	hButtonRotateDown = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
+	hButtonRotateUp = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_ROTATE_UP );
+	hButtonRotateLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_LEFT );
+	hButtonRotateRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_RIGHT );
+
+	buttonBlockPosX = width - buttonSize - indentFromBorder;
+	buttonBlockPosY = buttonSize + indentFromBorder;
+
+	hButtonZoomMinus = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ZOOM_OUT );
+	hButtonZoomPlus = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_ZOOM_ON );
 }
 
 void CWinMain::ResizeChildrens() {
@@ -269,18 +279,27 @@ void CWinMain::ResizeChildrens() {
 	int height = rect.bottom - rect.top;
 	SetWindowPos( hChild, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
 
-	setButtonPos( hButtonMoveBot, 50, height - 50 );
-	setButtonPos( hButtonMoveTop, 50, height - 75 );
-	setButtonPos( hButtonMoveLeft, 25, height - 50 );
-	setButtonPos( hButtonMoveRight, 75, height - 50 );
+	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
+	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
 
-	setButtonPos( hButtonRotateUp, width - 75, height - 75 );
-	setButtonPos( hButtonRotateDown, width - 75, height - 50 );
-	setButtonPos( hButtonRotateLeft, width - 100, height - 50 );
-	setButtonPos( hButtonRotateRight, width - 50, height - 50 );
+	setButtonPos( hButtonMoveBot, buttonBlockPosX, buttonBlockPosY );
+	setButtonPos( hButtonMoveTop, buttonBlockPosX, buttonBlockPosY - buttonSize );
+	setButtonPos( hButtonMoveLeft, buttonBlockPosX - buttonSize, buttonBlockPosY );
+	setButtonPos( hButtonMoveRight, buttonBlockPosX + buttonSize, buttonBlockPosY );
 
-	setButtonPos( hButtonZoomMinus, width - 50, 50 );
-	setButtonPos( hButtonZoomPlus, width - 50, 25 );
+	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;
+	// buttonBlockPosY = height - buttonSize - indentFromBorder;
+
+	setButtonPos( hButtonRotateDown, buttonBlockPosX, buttonBlockPosY );
+	setButtonPos( hButtonRotateUp, buttonBlockPosX, buttonBlockPosY -buttonSize );
+	setButtonPos( hButtonRotateLeft, buttonBlockPosX - buttonSize, buttonBlockPosY );
+	setButtonPos( hButtonRotateRight, buttonBlockPosX + buttonSize, buttonBlockPosY );
+
+	buttonBlockPosX = width - buttonSize - indentFromBorder;
+	buttonBlockPosY = buttonSize + indentFromBorder;
+
+	setButtonPos( hButtonZoomMinus, buttonBlockPosX, buttonBlockPosY );
+	setButtonPos( hButtonZoomPlus, buttonBlockPosX, buttonBlockPosY - buttonSize );
 }
 
 LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )

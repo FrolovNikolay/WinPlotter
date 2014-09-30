@@ -20,10 +20,10 @@ public:
 	static bool registerClass( HINSTANCE hInstance );	// зарегистрировать класс окна
 	HWND create( HINSTANCE hInctance );					// создать экземпл€р окна
 	void show( int cmdShow );							// показать окно
-	friend HWND createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id );	// создать кнопку и  проинициализировать defButtonPorc
-	friend void setButtonPos( HWND hWnd, int X, int Y );							// изменить позицию кнопки
-	static const int Size = 25;							// рзмер кнопки
-	static const int MouseWheelSens = 25;				// чувствительность колесика мыши
+	HWND createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id );	// создать кнопку и  проинициализировать defButtonPorc
+	void setButtonPos( HWND hWnd, int X, int Y );		// изменить позицию кнопки
+	double MouseWheelSens = 0.04;						// чувствительность колесика 
+	//int getButtonSize() { return buttonSize; }		// возможно добавитьс€ функци€ смены размера кнопок
 
 protected:
 	void OnDestroy();									// разрушение окна
@@ -54,6 +54,7 @@ private:
 	HWND hFormulaForm;									// хэндл диалога
 	CWinPlotter winPlotter;								// €кобы так должен выгл€деть делегат
 	UINT_PTR timer;										// таймер
+	int buttonSize = 25;								// рзмер кнопки
 
 	// хэндлы кнопок
 	HWND hButtonMoveTop, hButtonMoveBot, hButtonMoveLeft, hButtonMoveRight;
