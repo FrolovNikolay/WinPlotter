@@ -340,8 +340,9 @@ BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 			DestroyWindow( hWnd );
 			wnd->hFormulaForm = 0;
 			return TRUE;
+		default:
+			return FALSE;
 	}
-	return FALSE;
 }
 
 LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
