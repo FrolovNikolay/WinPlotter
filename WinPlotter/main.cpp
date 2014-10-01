@@ -1,33 +1,26 @@
-#include "WinPlotterWindow.h"
+#include <windows.h>
+#include "CWinMain.h"
+#include "CWinPlotter.h"
+#include "resource.h"
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	CWinPlotterWindow mainWindow;
+int __stdcall wWinMain( HINSTANCE hInstance, HINSTANCE previnstance, LPWSTR commandLine, int nCmdShow ) {
+	CWinMain::registerClass(hInstance);
+	CWinPlotter::registerClass(hInstance);
+	CWinMain window;
 
-	if (!mainWindow.RegisterWindowClass()) {
-		MessageBox(NULL, L"Не удалось зарегистрировать класс окна WinPlotterWindow!", L"Ошибка", MB_OK);
-		return 1;
+	HWND hWnd = window.create( hInstance );
+
+	if( hWnd == 0 ) {
+		MessageBox( 0, L"WTF", L"WTF", MB_OK );
+		return -1;
 	}
-
-	if (!mainWindow.Create()) {
-		MessageBox(NULL, L"Не удалось зарегистрировать класс окна WinPlotterWindow!", L"Ошибка", MB_OK);
-		return 1;
-	}
-
-	mainWindow.Show(nCmdShow);
+	window.show( nCmdShow );
 
 	MSG msg;
-	while (true)
-	{
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-		{
-			if (msg.message == WM_QUIT)
-			{
-				break;
-			}
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
+	while( ::GetMessage( &msg, 0, 0, 0 ) ) {
+		::TranslateMessage( &msg );
+		::DispatchMessage( &msg );
 	}
 
-	return (int)msg.wParam;
+	return 0;
 }

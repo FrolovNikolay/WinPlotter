@@ -33,16 +33,13 @@
     <ClInclude Include="3DPoint.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="3DSegmentIndex.h">
+    <ClInclude Include="SegmentIndex.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="3DTriangleIndex.h">
+    <ClInclude Include="TriangleIndex.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="3DObject.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="2DObject.h">
+    <ClInclude Include="Model.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -68,16 +65,13 @@
     <ClCompile Include="3DPoint.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="3DSegmentIndex.cpp">
+    <ClCompile Include="SegmentIndex.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="3DTriangleIndex.cpp">
+    <ClCompile Include="TriangleIndex.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="3DObject.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-    <ClCompile Include="2DObject.cpp">
+    <ClCompile Include="Model.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

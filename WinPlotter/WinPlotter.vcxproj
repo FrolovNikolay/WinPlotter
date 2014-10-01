@@ -64,24 +64,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="2DObject.h" />
     <ClInclude Include="2DPoint.h" />
-    <ClInclude Include="3DObject.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="3DPoint.h" />
-    <ClInclude Include="3DSegmentIndex.h" />
-    <ClInclude Include="3DTriangleIndex.h" />
+    <ClInclude Include="SegmentIndex.h" />
+    <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="EngineDrawer.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="WinPlotterWindow.h" />
     <ClInclude Include="EngineCamera.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="2DObject.cpp" />
     <ClCompile Include="2DPoint.cpp" />
-    <ClCompile Include="3DObject.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="3DPoint.cpp" />
-    <ClCompile Include="3DSegmentIndex.cpp" />
-    <ClCompile Include="3DTriangleIndex.cpp" />
+    <ClCompile Include="SegmentIndex.cpp" />
+    <ClCompile Include="TriangleIndex.cpp" />
     <ClCompile Include="EngineDrawer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix44.cpp" />
