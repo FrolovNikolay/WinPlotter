@@ -1,5 +1,4 @@
 #pragma once
-
 #include "3DPoint.h"
 #include "Matrix44.h"
 #include "Model.h"
@@ -10,14 +9,12 @@
 class CEngineCamera
 {
 public:
-	CEngineCamera();
+	CEngineCamera(int clientWidth, int clientHeight);
 	void SetPosition(C3DPoint point);
 
-	// Первый ключевой метод, который обрабатывает трёхмерный объект
-	void InitWithObject(const C3DModel& object);
-
-	// Возвращает набор двумерных примитивов, отсортированных в порядке отрисовки, которые необходимо отрисовать в окне
-	void Render();
+	// Ключевой метод, который обрабатывает трёхмерный объект. По ссылке renderedObject записывает двухмерные примитивы для
+	// отрисовки в окне программы
+	void Render(const C3DModel& object, C2DModel& renderedObject);
 
 private:
 	// Положение камеры в трёхмерном пространстве и матрица переноса
@@ -47,5 +44,20 @@ private:
 
 	// Размер проекции (разрешение окна, куда будет генерироваться картинка)
 	int ClientWidth, ClientHeight;
+
+	// Структура, хранящая координаты модели в пространстве камеры
+	C3DModel cameraModel;
+
+	// Внутренний метод, который создаёт локальную версию объекта с координатами камеры
+	void transform(const C3DModel& object);
+	
+	// Фильтрует узлы и элементы модели, которые не попадают в область обзора камеры
+	void filter();
+
+	// Проецирует точки внутренней структуры в двухмерную модель для отрисовки на экране
+	void render(C2DModel& renderedObject);
+
+	// Возвращает преобразованные координаты точки при помощи матрицы преобразований
+	C3DPoint modifyPoint(C3DPoint originPoint) const;
 };
 
