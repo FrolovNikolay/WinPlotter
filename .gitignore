@@ -1,5 +1,6 @@
 # Visual Studio common files
 *.sdf
+*.opensdf
 *.suo
 Debug/
 WinPlotter/Debug/

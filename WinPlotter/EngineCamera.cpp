@@ -2,18 +2,13 @@
 #include <cmath>
 
 CEngineCamera::CEngineCamera() :
-AngleX(0), AngleY(0), AngleZ(1)
+AngleX(0), AngleY(0), AngleZ(1), ViewDistance(1), ClientHeight(0), ClientWidth(0)
 {
-	Position = C3DPoint();
-	updateInverseRotateMatrixX(0);
-	updateInverseRotateMatrixY(0);
-	updateInverseRotateMatrixZ(1);
-	updateTransformMatrix();
-}
-
-
-CEngineCamera::~CEngineCamera()
-{
+	Position = C3DPoint(10, 10, 10);
+	UpdateInverseRotateMatrixX(0);
+	UpdateInverseRotateMatrixY(0);
+	UpdateInverseRotateMatrixZ(1);
+	UpdateTransformMatrix();
 }
 
 void CEngineCamera::SetPosition(C3DPoint point) {

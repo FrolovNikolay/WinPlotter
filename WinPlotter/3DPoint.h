@@ -1,5 +1,7 @@
 #pragma once
-class C3DPoint
+
+// Структура, задающая точку в трёхмерном пространстве (вектор-строка)
+struct C3DPoint
 {
 public:
 	double X, Y, Z;
