@@ -22,7 +22,7 @@ void CEngineCamera::SetPosition(C3DPoint point) {
 }
 
 // Обновления матриц преобразования
-void CEngineCamera::updateInverseRotateMatrixX(double angle) {
+void CEngineCamera::UpdateInverseRotateMatrixX(double angle) {
 	inverseRotateMatrixX = CMatrix44(
 		1, 0, 0, 0,
 		0, cos(-angle), sin(-angle), 0,
@@ -31,7 +31,7 @@ void CEngineCamera::updateInverseRotateMatrixX(double angle) {
 	);
 }
 
-void CEngineCamera::updateInverseRotateMatrixY(double angle) {
+void CEngineCamera::UpdateInverseRotateMatrixY(double angle) {
 	inverseRotateMatrixX = CMatrix44(
 		cos(-angle), 0, -sin(-angle), 0,
 		0, 1, 0, 0,
@@ -40,7 +40,7 @@ void CEngineCamera::updateInverseRotateMatrixY(double angle) {
 		);
 }
 
-void CEngineCamera::updateInverseRotateMatrixZ(double angle) {
+void CEngineCamera::UpdateInverseRotateMatrixZ(double angle) {
 	inverseRotateMatrixX = CMatrix44(
 		cos(-angle), sin(-angle), 0, 0,
 		-sin(-angle), cos(-angle), 0, 0,
@@ -49,10 +49,10 @@ void CEngineCamera::updateInverseRotateMatrixZ(double angle) {
 	);
 }
 
-void CEngineCamera::updateTransformMatrix() {
+void CEngineCamera::UpdateTransformMatrix() {
 	TransfromMatrix = CMatrix44();
-	TransfromMatrix.multiplyAt(MovingMatrix);
-	TransfromMatrix.multiplyAt(inverseRotateMatrixY);
-	TransfromMatrix.multiplyAt(inverseRotateMatrixX);
-	TransfromMatrix.multiplyAt(inverseRotateMatrixZ);
+	TransfromMatrix.MultiplyRight(MovingMatrix);
+	TransfromMatrix.MultiplyRight(inverseRotateMatrixY);
+	TransfromMatrix.MultiplyRight(inverseRotateMatrixX);
+	TransfromMatrix.MultiplyRight(inverseRotateMatrixZ);
 }

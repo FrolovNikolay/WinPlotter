@@ -2,7 +2,7 @@
 
 #include "3DPoint.h"
 #include "Matrix44.h"
-#include "3DObject.h"
+#include "Model.h"
 
 /*
 * Класс движка, который переводит трёхмерные объекты пространства графика в двухмерные объекты контекста окна отрисовки
@@ -14,7 +14,7 @@ public:
 	void SetPosition(C3DPoint point);
 
 	// Первый ключевой метод, который обрабатывает трёхмерный объект
-	void InitWithObject(const C3DObject& object);
+	void InitWithObject(const C3DModel& object);
 
 	// Возвращает набор двумерных примитивов, отсортированных в порядке отрисовки, которые необходимо отрисовать в окне
 	void Render();

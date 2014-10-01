@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C101D197-90EA-42D7-B01C-C501143906CA}</ProjectGuid>
-    <RootNamespace>WinPlotterLocal</RootNamespace>
+    <ProjectGuid>{E885EA24-FE24-4340-B743-22EE813F287D}</ProjectGuid>
+    <RootNamespace>WinPlotter</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -69,21 +69,19 @@
     <ClInclude Include="3DPoint.h" />
     <ClInclude Include="SegmentIndex.h" />
     <ClInclude Include="TriangleIndex.h" />
-    <ClInclude Include="EngineDrawer.h" />
     <ClInclude Include="Matrix44.h" />
-    <ClInclude Include="WinPlotterWindow.h" />
     <ClInclude Include="EngineCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2DPoint.cpp" />
+    <ClCompile Include="CWinMain.cpp" />
+    <ClCompile Include="CWinPlotter.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="3DPoint.cpp" />
     <ClCompile Include="SegmentIndex.cpp" />
     <ClCompile Include="TriangleIndex.cpp" />
-    <ClCompile Include="EngineDrawer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix44.cpp" />
-    <ClCompile Include="WinPlotterWindow.cpp" />
     <ClCompile Include="EngineCamera.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
