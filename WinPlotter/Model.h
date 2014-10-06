@@ -30,7 +30,10 @@ public:
 	CModel<T>() {};
 
 	// Добавляет узел модели в конец списка (чтобы не нарушить нумерацию)
-	void AddPoint(T point);
+	void AddPoint(T point)
+	{
+		Points.push_back(point);
+	};
 
 	// Добавляет отрезок, соединяющий две вершины
 	void AddSegment(int firstIndex, int secondIndex);

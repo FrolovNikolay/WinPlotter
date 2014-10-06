@@ -1,11 +1,6 @@
 #include "Model.h"
 
 template <typename T>
-void CModel<T>::AddPoint(T point) {
-	Points.push_back(point);
-}
-
-template <typename T>
 void CModel<T>::AddSegment(int firstIndex, int secondIndex) {
 	if (firstIndex >= Points.size || secondIndex >= Points.size) {
 		throw CModel<T>::OutOfRange();

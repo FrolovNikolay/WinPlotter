@@ -10,7 +10,12 @@ class CEngineCamera
 {
 public:
 	CEngineCamera(int clientWidth, int clientHeight);
+
+	// Устанавливает камеру в заданную точку трёхмерного пространства
 	void SetPosition(C3DPoint point);
+
+	// Устанавливает размеры клиентской области ширины и высоты окна
+	void SetWindowSize(int clientWidth, int clientHeight);
 
 	// Ключевой метод, который обрабатывает трёхмерный объект. По ссылке renderedObject записывает двухмерные примитивы для
 	// отрисовки в окне программы
@@ -40,10 +45,16 @@ private:
 	double ViewDistance;
 
 	// Ближняя и дальная плоскости отсечения (координаты по Z)
-	double NearZ, FarZ;
+	static const double NearZ;
+	static const double FarZ;
 
-	// Размер проекции (разрешение окна, куда будет генерироваться картинка)
+	// Размер проекции (разрешение окна, куда будет генерироваться картинка) и соотношение между размерами
 	int ClientWidth, ClientHeight;
+	double AspectRatio;
+
+	// Исключение, вызываемое при неверно переданных параметрах размеров проекции
+	class IncorrectWindowSize {
+	};
 
 	// Структура, хранящая координаты модели в пространстве камеры
 	C3DModel cameraModel;
