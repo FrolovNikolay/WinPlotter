@@ -1,7 +1,8 @@
-#include "EngineCamera.h"
+п»ї#include "EngineCamera.h"
 #include <cmath>
+#include <set>
 
-// Ближняя и дальная плоскости отсечения (координаты по Z)
+// Р‘Р»РёР¶РЅСЏСЏ Рё РґР°Р»СЊРЅР°СЏ РїР»РѕСЃРєРѕСЃС‚Рё РѕС‚СЃРµС‡РµРЅРёСЏ (РєРѕРѕСЂРґРёРЅР°С‚С‹ РїРѕ Z)
 const double CEngineCamera::NearZ = 1;
 const double CEngineCamera::FarZ = 100;
 
@@ -28,59 +29,62 @@ void CEngineCamera::SetWindowSize(int clientWidth_, int clientHeight_) {
 	ClientWidth = clientWidth_;
 	ClientHeight = clientHeight_;
 
-	// Расстояние до экрана проекции устанавлиается как половина ширины экрана
+	// Р Р°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ СЌРєСЂР°РЅР° РїСЂРѕРµРєС†РёРё СѓСЃС‚Р°РЅР°РІР»РёР°РµС‚СЃСЏ РєР°Рє РїРѕР»РѕРІРёРЅР° С€РёСЂРёРЅС‹ СЌРєСЂР°РЅР°
 	ViewDistance = (ClientWidth - 1) / 2;
 
-	// Соотношение между шириной и высотой
+	// РЎРѕРѕС‚РЅРѕС€РµРЅРёРµ РјРµР¶РґСѓ С€РёСЂРёРЅРѕР№ Рё РІС‹СЃРѕС‚РѕР№
 	AspectRatio = ClientWidth / ClientHeight;
 }
 
 void CEngineCamera::transform(const C3DModel& object) {
-	// Копируем исходный объект
+	// РљРѕРїРёСЂСѓРµРј РёСЃС…РѕРґРЅС‹Р№ РѕР±СЉРµРєС‚
 	cameraModel = C3DModel(object);
 
-	// Пробегаемся по всем его точкам и модифицируем при помощи матрицы преобразований
+	// РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РІСЃРµРј РµРіРѕ С‚РѕС‡РєР°Рј Рё РјРѕРґРёС„РёС†РёСЂСѓРµРј РїСЂРё РїРѕРјРѕС‰Рё РјР°С‚СЂРёС†С‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№
 	for (auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++) {
 		*point = modifyPoint(*point);
 	}
 }
 
 void CEngineCamera::filter() {
-	// TODO: удаление (и модификация) элементов внутренней структуры
+	// TODO: СѓРґР°Р»РµРЅРёРµ (Рё РјРѕРґРёС„РёРєР°С†РёСЏ) СЌР»РµРјРµРЅС‚РѕРІ РІРЅСѓС‚СЂРµРЅРЅРµР№ СЃС‚СЂСѓРєС‚СѓСЂС‹
 
-	// В первом приближении мы просто будем удалять те отрезки и треугольники, у которых хотя бы одна вершина попадает
-	// вне области видимости камеры 
-	std::vector<int> pointNumbersForErase; // индексы удаляемых точек
+	// Р’ РїРµСЂРІРѕРј РїСЂРёР±Р»РёР¶РµРЅРёРё РјС‹ РїСЂРѕСЃС‚Рѕ Р±СѓРґРµРј СѓРґР°Р»СЏС‚СЊ С‚Рµ РѕС‚СЂРµР·РєРё Рё С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё, Сѓ РєРѕС‚РѕСЂС‹С… С…РѕС‚СЏ Р±С‹ РѕРґРЅР° РІРµСЂС€РёРЅР° РїРѕРїР°РґР°РµС‚
+	// РІРЅРµ РѕР±Р»Р°СЃС‚Рё РІРёРґРёРјРѕСЃС‚Рё РєР°РјРµСЂС‹ 
+	std::set<int> pointNumbersForErase; // РёРЅРґРµРєСЃС‹ СѓРґР°Р»СЏРµРјС‹С… С‚РѕС‡РµРє
 	int counter = 0;
 	for (auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++) {
-		// Если точка находится вне области видимости
+		// Р•СЃР»Рё С‚РѕС‡РєР° РЅР°С…РѕРґРёС‚СЃСЏ РІРЅРµ РѕР±Р»Р°СЃС‚Рё РІРёРґРёРјРѕСЃС‚Рё
 		if (point->Z < NearZ || point->Z > FarZ || std::abs(point->X) > point->Z) {
-			pointNumbersForErase.push_back(counter);
+			pointNumbersForErase.insert(counter);
 		}
 		counter += 1;
 	}
 
-	// Теперь мы удаляем все объекты (индексы), которые содержат хотя бы одну точку из отсечённых
+	// РўРµРїРµСЂСЊ РјС‹ СѓРґР°Р»СЏРµРј РІСЃРµ РѕР±СЉРµРєС‚С‹ (РёРЅРґРµРєСЃС‹), РєРѕС‚РѕСЂС‹Рµ СЃРѕРґРµСЂР¶Р°С‚ С…РѕС‚СЏ Р±С‹ РѕРґРЅСѓ С‚РѕС‡РєСѓ РёР· РѕС‚СЃРµС‡С‘РЅРЅС‹С…
 	auto segment = cameraModel.Segments.begin();
 	while (segment != cameraModel.Segments.end()) {
-		// Если попадает под условие, то удаляем
-		if (false) {
+		// Р•СЃР»Рё РїРѕРїР°РґР°РµС‚ РїРѕРґ СѓСЃР»РѕРІРёРµ (РѕРґРёРЅ РёР· РєРѕРЅС†РѕРІ РЅР°С…РѕРґРёС‚СЃСЏ СЃСЂРµРґРё СѓРґР°Р»СЏРµРјС‹С… С‚РѕС‡РµРє), С‚Рѕ СѓРґР°Р»СЏРµРј
+		if (pointNumbersForErase.find(segment->First) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(segment->Second) != pointNumbersForErase.end()) {
 			segment = cameraModel.Segments.erase(segment);
 		}
-		// Иначе переходим к следующему элементу
+		// РРЅР°С‡Рµ РїРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ
 		else {
 			segment++;
 		}
 	}
 
-	// Аналогично и для треугольников
+	// РђРЅР°Р»РѕРіРёС‡РЅРѕ Рё РґР»СЏ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 	auto triangle = cameraModel.Triangles.begin();
 	while (triangle != cameraModel.Triangles.end()) {
-		// Если попадает под условие, то удаляем
-		if (false) {
+		// Р•СЃР»Рё РїРѕРїР°РґР°РµС‚ РїРѕРґ СѓСЃР»РѕРІРёРµ (РѕРґРЅР° РёР· РІРµСЂС€РёРЅ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° РїРѕРїР°РґР°РµС‚ РІ С‚РѕС‡РєРё), С‚Рѕ СѓРґР°Р»СЏРµРј
+		if (pointNumbersForErase.find(triangle->First) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(triangle->Second) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(triangle->Third) != pointNumbersForErase.end()) {
 			triangle = cameraModel.Triangles.erase(triangle);
 		}
-		// Иначе переходим к следующему элементу
+		// РРЅР°С‡Рµ РїРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СЌР»РµРјРµРЅС‚Сѓ
 		else {
 			triangle++;
 		}
@@ -88,19 +92,19 @@ void CEngineCamera::filter() {
 }
 
 void CEngineCamera::render(C2DModel& renderedObject) {
-	// TODO: преобразование трёхмерных координат точек в контексте камеры в двухмерные координаты в контексте окна
+	// TODO: РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚СЂС‘С…РјРµСЂРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚ С‚РѕС‡РµРє РІ РєРѕРЅС‚РµРєСЃС‚Рµ РєР°РјРµСЂС‹ РІ РґРІСѓС…РјРµСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ РєРѕРЅС‚РµРєСЃС‚Рµ РѕРєРЅР°
 	renderedObject.Clear();
 
-	// Так как сама структура объекта (отрезки и треугольники) уже не поменяется, то мы просто копируем имеющиеся индексы
+	// РўР°Рє РєР°Рє СЃР°РјР° СЃС‚СЂСѓРєС‚СѓСЂР° РѕР±СЉРµРєС‚Р° (РѕС‚СЂРµР·РєРё Рё С‚СЂРµСѓРіРѕР»СЊРЅРёРєРё) СѓР¶Рµ РЅРµ РїРѕРјРµРЅСЏРµС‚СЃСЏ, С‚Рѕ РјС‹ РїСЂРѕСЃС‚Рѕ РєРѕРїРёСЂСѓРµРј РёРјРµСЋС‰РёРµСЃСЏ РёРЅРґРµРєСЃС‹
 	renderedObject.Triangles = cameraModel.Triangles;
 	renderedObject.Segments = cameraModel.Segments;
 
-	// Для каждой точки выполняем её аксонометрическое преобразование (то есть проецируем на плоскость обзора камеры)
+	// Р”Р»СЏ РєР°Р¶РґРѕР№ С‚РѕС‡РєРё РІС‹РїРѕР»РЅСЏРµРј РµС‘ Р°РєСЃРѕРЅРѕРјРµС‚СЂРёС‡РµСЃРєРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ (С‚Рѕ РµСЃС‚СЊ РїСЂРѕРµС†РёСЂСѓРµРј РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ РѕР±Р·РѕСЂР° РєР°РјРµСЂС‹)
 	for (auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++) {
 		C2DPoint newPoint;
 		newPoint.X = ViewDistance * point->X / point->Z + (0.5 * ClientWidth - 0.5);
 		newPoint.Y = - ViewDistance * point->Y * AspectRatio / point->Z + (0.5 * ClientHeight - 0.5);
-		renderedObject.AddPoint(newPoint);
+		renderedObject.AddPoint(newPoint); 
 	}
 }
 
@@ -120,7 +124,7 @@ void CEngineCamera::SetPosition(C3DPoint point) {
 	);
 }
 
-// Обновления матриц преобразования
+// РћР±РЅРѕРІР»РµРЅРёСЏ РјР°С‚СЂРёС† РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
 void CEngineCamera::UpdateInverseRotateMatrixX(double angle) {
 	inverseRotateMatrixX = CMatrix44(
 		1, 0, 0, 0,
