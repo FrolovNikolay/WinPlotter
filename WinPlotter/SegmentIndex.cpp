@@ -1,9 +1,9 @@
-#include "SegmentIndex.h"
+п»ї#include "SegmentIndex.h"
 
 CSegmentIndex::CSegmentIndex(int first , int second):
 First(first), Second(second)
 {
-	// Проверяем корректность переданных индексов
+	// РџСЂРѕРІРµСЂСЏРµРј РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРµСЂРµРґР°РЅРЅС‹С… РёРЅРґРµРєСЃРѕРІ
 	if (first < 0 || second < 0 || first == second)
 	{
 		throw CSegmentIndex::IncorrectIndex();

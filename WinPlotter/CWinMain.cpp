@@ -1,9 +1,9 @@
-/*
+п»ї/*
 author: Timur Khusaenov
 class: CWinMain
 description:
-	Класс реализует интерфейс, применяемый в приложении WinPlotter.
-	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
+	В Р»Р°СЃСЃ СЂРµР°Р»РёР·СѓРµС‚ РёРЅС‚РµСЂС„РµР№СЃ, РїСЂРёРјРµРЅВ¤РµРјС‹Р№ РІ РїСЂРёР»РѕР¶РµРЅРёРё WinPlotter.
+	Ж’Р»В¤ РєРѕСЂСЂРµРєС‚РЅРѕР№ СЂР°Р±РѕС‚С‹ РґРѕР»Р¶РµРЅ СЃРѕРґРµСЂР¶РІР°С‚СЊ РґРµР»РµРіР°С‚Р° CWinPlotter, РєРѕС‚РѕСЂС‹Р№ СЂРµР°Р»РёР·СѓРµС‚ РѕС‚СЂРёСЃРѕРІРєСѓ РіСЂР°С„РёРєР°
 */
 
 const int indentFromBorder = 25;
@@ -58,7 +58,7 @@ HWND CWinMain::createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id 
 }
 
 /* 
-обертка над дефолтным обработчиком нажатия кнопок
+РѕР±РµСЂС‚РєР° РЅР°Рґ РґРµС„РѕР»С‚РЅС‹Рј РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРј РЅР°Р¶Р°С‚РёВ¤ РєРЅРѕРїРѕРє
 */
 LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -74,13 +74,13 @@ LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 			wnd->rotateDirection = D_None;
 			wnd->zoom = Z_None;
 			break;
-			// assert не нужен, так как обертка
+			// assert РЅРµ РЅСѓР¶РµРЅ, С‚Р°Рє РєР°Рє РѕР±РµСЂС‚РєР°
 	}
 	return CallWindowProc( defButtonProc, hWnd, uMsg, wParam, lParam );
 }
 
 /*
-обертка над оброботчиком дочернего окна 
+РѕР±РµСЂС‚РєР° РЅР°Рґ РѕР±СЂРѕР±РѕС‚С‡РёРєРѕРј РґРѕС‡РµСЂРЅРµРіРѕ РѕРєРЅР° 
 */
 LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -96,7 +96,7 @@ LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			ReleaseCapture();
 			wnd->curMove = false;
 			break;
-			// assert не нужен, так как обертка
+			// assert РЅРµ РЅСѓР¶РµРЅ, С‚Р°Рє РєР°Рє РѕР±РµСЂС‚РєР°
 	}
 	return CallWindowProc( defMouseProc, hWnd, uMsg, wParam, lParam );
 }
@@ -134,7 +134,7 @@ void CWinMain::setButtonPos( HWND hWnd, int X, int Y )
 }
 
 /*
-обработчик главного окна
+РѕР±СЂР°Р±РѕС‚С‡РёРє РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
 */
 LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -249,15 +249,15 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	SetWindowPos( hChild, HWND_BOTTOM, 0, 0, width, height, 0 );
 	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hChild, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
 
-	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен 2 * размеру кнопки
-	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен 2 * размеру кнопки
+	int buttonBlockPosX = buttonSize + indentFromBorder;				// РѕС‚СЃС‚СѓРї С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ РєРЅРѕРїРєРё СЂР°РІРµРЅ 2 * СЂР°Р·РјРµСЂСѓ РєРЅРѕРїРєРё
+	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// РѕС‚СЃС‚СѓРї С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ РєРЅРѕРїРєРё СЂР°РІРµРЅ 2 * СЂР°Р·РјРµСЂСѓ РєРЅРѕРїРєРё
 
 	hButtonMoveBot = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
 	hButtonMoveTop = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
 	hButtonMoveLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
 	hButtonMoveRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
 
-	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ так как положение кнопки считается от левого верхнего угла
+	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-РѕР№ РѕС‚СЃС‚СѓРї С‚Р°Рє РєР°Рє РїРѕР»РѕР¶РµРЅРёРµ РєРЅРѕРїРєРё СЃС‡РёС‚Р°РµС‚СЃВ¤ РѕС‚ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р°
 	// buttonBlockPosY = height - buttonSize - indentFromBorder;
 
 	hButtonRotateDown = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
@@ -279,8 +279,8 @@ void CWinMain::ResizeChildrens() {
 	int height = rect.bottom - rect.top;
 	SetWindowPos( hChild, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
 
-	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
-	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
+	int buttonBlockPosX = buttonSize + indentFromBorder;				// РѕС‚СЃС‚СѓРї С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ РєРЅРѕРїРєРё СЂР°РІРµРЅ СЂР°Р·РјРµСЂСѓ РєРЅРѕРїРєРё + 25
+	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// РѕС‚СЃС‚СѓРї С†РµРЅС‚СЂР°Р»СЊРЅРѕР№ РєРЅРѕРїРєРё СЂР°РІРµРЅ СЂР°Р·РјРµСЂСѓ РєРЅРѕРїРєРё + 25
 
 	setButtonPos( hButtonMoveBot, buttonBlockPosX, buttonBlockPosY );
 	setButtonPos( hButtonMoveTop, buttonBlockPosX, buttonBlockPosY - buttonSize );
@@ -326,7 +326,7 @@ void CWinMain::ShowFormulaForm()
 }
 
 /*
-обработчик диалогового окна ввода формулы
+РѕР±СЂР°Р±РѕС‚С‡РёРє РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° РІРІРѕРґР° С„РѕСЂРјСѓР»С‹
 */
 BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -370,7 +370,7 @@ void CWinMain::TakeFormula()
 	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
 	TCHAR* buff = new TCHAR[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
-	// отправить строку Паше
+	// РѕС‚РїСЂР°РІРёС‚СЊ СЃС‚СЂРѕРєСѓ С•Р°С€Рµ
 }
 
 LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )

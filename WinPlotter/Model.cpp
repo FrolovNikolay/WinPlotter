@@ -1,4 +1,4 @@
-#include "Model.h"
+﻿#include "Model.h"
 
 template <typename T>
 void CModel<T>::AddSegment(int firstIndex, int secondIndex) {

@@ -1,4 +1,4 @@
-#include "CWinPlotter.h"
+﻿#include "CWinPlotter.h"
 #include <Windows.h>
 #include "resource.h"
 
