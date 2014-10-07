@@ -1,5 +1,6 @@
 ﻿#include "EngineCamera.h"
 #include <cmath>
+#include <set>
 
 // Ближняя и дальная плоскости отсечения (координаты по Z)
 const double CEngineCamera::NearZ = 1;
@@ -50,12 +51,12 @@ void CEngineCamera::filter() {
 
 	// В первом приближении мы просто будем удалять те отрезки и треугольники, у которых хотя бы одна вершина попадает
 	// вне области видимости камеры 
-	std::vector<int> pointNumbersForErase; // индексы удаляемых точек
+	std::set<int> pointNumbersForErase; // индексы удаляемых точек
 	int counter = 0;
 	for (auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++) {
 		// Если точка находится вне области видимости
 		if (point->Z < NearZ || point->Z > FarZ || std::abs(point->X) > point->Z) {
-			pointNumbersForErase.push_back(counter);
+			pointNumbersForErase.insert(counter);
 		}
 		counter += 1;
 	}
@@ -63,8 +64,9 @@ void CEngineCamera::filter() {
 	// Теперь мы удаляем все объекты (индексы), которые содержат хотя бы одну точку из отсечённых
 	auto segment = cameraModel.Segments.begin();
 	while (segment != cameraModel.Segments.end()) {
-		// Если попадает под условие, то удаляем
-		if (false) {
+		// Если попадает под условие (один из концов находится среди удаляемых точек), то удаляем
+		if (pointNumbersForErase.find(segment->First) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(segment->Second) != pointNumbersForErase.end()) {
 			segment = cameraModel.Segments.erase(segment);
 		}
 		// Иначе переходим к следующему элементу
@@ -76,8 +78,10 @@ void CEngineCamera::filter() {
 	// Аналогично и для треугольников
 	auto triangle = cameraModel.Triangles.begin();
 	while (triangle != cameraModel.Triangles.end()) {
-		// Если попадает под условие, то удаляем
-		if (false) {
+		// Если попадает под условие (одна из вершин треугольника попадает в точки), то удаляем
+		if (pointNumbersForErase.find(triangle->First) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(triangle->Second) != pointNumbersForErase.end() ||
+			pointNumbersForErase.find(triangle->Third) != pointNumbersForErase.end()) {
 			triangle = cameraModel.Triangles.erase(triangle);
 		}
 		// Иначе переходим к следующему элементу
