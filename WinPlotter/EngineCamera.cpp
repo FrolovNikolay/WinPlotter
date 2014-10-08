@@ -7,13 +7,42 @@ const double CEngineCamera::NearZ = 1;
 const double CEngineCamera::FarZ = 100;
 
 CEngineCamera::CEngineCamera(int clientWidth, int clientHeight) :
-AngleX(0), AngleY(0), AngleZ(1), ViewDistance(1), ClientHeight(clientHeight), ClientWidth(clientWidth)
+ViewDistance(1), ClientHeight(clientHeight), ClientWidth(clientWidth), stepSize(1)
 {
-	Position = C3DPoint(10, 10, 10);
-	UpdateInverseRotateMatrixX(0);
-	UpdateInverseRotateMatrixY(0);
-	UpdateInverseRotateMatrixZ(1);
+	// Задаём начальное положение камеры
+	Position = C3DPoint(5, 0, 5);
+	ViewDirection = C3DPoint(0, 0, 0);
+	UpVector = C3DPoint(0, 1, 0);
+
 	UpdateTransformMatrix();
+}
+
+void CEngineCamera::UpdateRightVector() {
+	RightVector = UpVector.cross(ViewDirection);
+}
+
+void CEngineCamera::UpdateTransformMatrix() {
+	UpdateRightVector();
+
+	TransformMatrix.Set(0, 0, RightVector.X);
+	TransformMatrix.Set(0, 1, UpVector.X);
+	TransformMatrix.Set(0, 2, ViewDirection.X);
+	TransformMatrix.Set(0, 3, 0);
+
+	TransformMatrix.Set(1, 0, RightVector.Y);
+	TransformMatrix.Set(1, 1, UpVector.Y);
+	TransformMatrix.Set(1, 2, ViewDirection.Y);
+	TransformMatrix.Set(1, 3, 0);
+
+	TransformMatrix.Set(2, 0, RightVector.Z);
+	TransformMatrix.Set(2, 1, UpVector.Z);
+	TransformMatrix.Set(2, 2, ViewDirection.Z);
+	TransformMatrix.Set(2, 3, 0);
+
+	TransformMatrix.Set(3, 0, -Position.dot(RightVector));
+	TransformMatrix.Set(3, 1, -Position.dot(UpVector));
+	TransformMatrix.Set(3, 2, -Position.dot(ViewDirection));
+	TransformMatrix.Set(3, 3, 1);
 }
 
 void CEngineCamera::Render(const C3DModel& object, C2DModel& renderedObject) {
@@ -109,53 +138,127 @@ void CEngineCamera::render(C2DModel& renderedObject) {
 }
 
 C3DPoint CEngineCamera::modifyPoint(C3DPoint originPoint) const {
-	return TransfromMatrix.ProjectPoint(originPoint);
+	return TransformMatrix.ProjectPoint(originPoint);
 }
-
-
 
 void CEngineCamera::SetPosition(C3DPoint point) {
 	Position = point;
-	MovingMatrix = CMatrix44(
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		-Position.X, -Position.Y, -Position.Z, 1
-	);
+	UpdateTransformMatrix();
 }
 
-// Обновления матриц преобразования
-void CEngineCamera::UpdateInverseRotateMatrixX(double angle) {
-	inverseRotateMatrixX = CMatrix44(
-		1, 0, 0, 0,
-		0, cos(-angle), sin(-angle), 0,
-		0, -sin(-angle), cos(-angle), 0,
-		0, 0, 0, 1
-	);
+void CEngineCamera::SetViewDirection(C3DPoint viewDirection_) {
+	ViewDirection = viewDirection_;
 }
 
-void CEngineCamera::UpdateInverseRotateMatrixY(double angle) {
-	inverseRotateMatrixX = CMatrix44(
-		cos(-angle), 0, -sin(-angle), 0,
-		0, 1, 0, 0,
-		sin(-angle), 0, cos(-angle), 0,
-		0, 0, 0, 1
-		);
+void CEngineCamera::SetUpVector(C3DPoint upVector_) {
+	UpVector = upVector_;
 }
 
-void CEngineCamera::UpdateInverseRotateMatrixZ(double angle) {
-	inverseRotateMatrixX = CMatrix44(
-		cos(-angle), sin(-angle), 0, 0,
-		-sin(-angle), cos(-angle), 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	);
+void CEngineCamera::MoveForward(double speed) {
+	// Вычисляем вектор движения
+	C3DPoint movementVector = ViewDirection - Position;
+	
+	// Прибавляем приращение
+	Position = Position + movementVector * speed;
+
+	// Обновляем матрицу преобразования
+	UpdateTransformMatrix();
 }
 
-void CEngineCamera::UpdateTransformMatrix() {
-	TransfromMatrix = CMatrix44();
-	TransfromMatrix.MultiplyRight(MovingMatrix);
-	TransfromMatrix.MultiplyRight(inverseRotateMatrixY);
-	TransfromMatrix.MultiplyRight(inverseRotateMatrixX);
-	TransfromMatrix.MultiplyRight(inverseRotateMatrixZ);
+void CEngineCamera::rotate(double angle, double x, double y, double z) {
+	// Так как при вращении мы изменяем точку направления камеры, то заводим временную переменную
+	C3DPoint newViewDirection;
+
+	// Вектор движения
+	C3DPoint movementVector = ViewDirection - Position;
+
+	// Синус и косинус вращаемого угла
+	double cosTheta = std::cos(angle);
+	double sinTheta = std::sin(angle);
+
+	// Найдем значение X точки вращения
+	newViewDirection.X = (cosTheta + (1 - cosTheta) * x * x) * movementVector.X;
+	newViewDirection.X += ((1 - cosTheta) * x * y - z * sinTheta) * movementVector.Y;
+	newViewDirection.X += ((1 - cosTheta) * x * z + y * sinTheta) * movementVector.Z;
+
+	// И значение Y
+	newViewDirection.Y = ((1 - cosTheta) * x * y + z * sinTheta) * movementVector.X;
+	newViewDirection.Y += (cosTheta + (1 - cosTheta) * y * y) * movementVector.Y;
+	newViewDirection.Y += ((1 - cosTheta) * y * z - x * sinTheta) * movementVector.Z;
+
+	// И Z...
+	newViewDirection.Z = ((1 - cosTheta) * x * z - y * sinTheta) * movementVector.X;
+	newViewDirection.Z += ((1 - cosTheta) * y * z + x * sinTheta) * movementVector.Y;
+	newViewDirection.Z += (cosTheta + (1 - cosTheta) * z * z) * movementVector.Z;
+
+	// Теперь просто прибавим новый вектор к нашей позиции,
+	// чтобы установить новую позицию камеры.
+	ViewDirection = Position + newViewDirection;
+
+	// Обновляем матрицу преобразования
+	UpdateTransformMatrix();
+}
+
+void CEngineCamera::rotateAroundPoint(C3DPoint point, double angle, double x, double y, double z) {
+	// Так как при вращении мы изменяем точку направления камеры, то заводим временную переменную
+	C3DPoint newViewDirection;
+
+	// Центр, вокруг которого нужно вращаться
+	C3DPoint centerPoint = Position - point;
+
+	// Синус и косинус вращаемого угла
+	double cosTheta = std::cos(angle);
+	double sinTheta = std::sin(angle);
+
+	// Найдем значение X точки вращения
+	newViewDirection.X = (cosTheta + (1 - cosTheta) * x * x) * centerPoint.X;
+	newViewDirection.X += ((1 - cosTheta) * x * y - z * sinTheta) * centerPoint.Y;
+	newViewDirection.X += ((1 - cosTheta) * x * z + y * sinTheta) * centerPoint.Z;
+
+	// И значение Y
+	newViewDirection.Y = ((1 - cosTheta) * x * y + z * sinTheta) * centerPoint.X;
+	newViewDirection.Y += (cosTheta + (1 - cosTheta) * y * y) * centerPoint.Y;
+	newViewDirection.Y += ((1 - cosTheta) * y * z - x * sinTheta) * centerPoint.Z;
+
+	// И Z...
+	newViewDirection.Z = ((1 - cosTheta) * x * z - y * sinTheta) * centerPoint.X;
+	newViewDirection.Z += ((1 - cosTheta) * y * z + x * sinTheta) * centerPoint.Y;
+	newViewDirection.Z += (cosTheta + (1 - cosTheta) * z * z) * centerPoint.Z;
+
+	// Теперь просто прибавим новый вектор к нашей позиции,
+	// чтобы установить новую позицию камеры.
+	ViewDirection = point + newViewDirection;
+
+	// Обновляем матрицу преобразования
+	UpdateTransformMatrix();
+}
+
+// Вращение относительно оси OX
+void CEngineCamera::RotateByX(double angle) {
+	rotate(angle, 1, 0, 0);
+}
+
+// Вращение относительно оси OY
+void CEngineCamera::RotateByY(double angle) {
+	rotate(angle, 0, 1, 0);
+}
+
+// Вращение относительно оси OZ
+void CEngineCamera::RotateByZ(double angle) {
+	rotate(angle, 0, 0, 1);
+}
+
+// Вращение относительно оси OX вокруг заданной точки
+void CEngineCamera::RotateAroundPointByX(C3DPoint centerPoint, double angle) {
+	rotateAroundPoint(centerPoint, angle, 1, 0, 0);
+}
+
+// Вращение относительно оси OY вокруг заданной точки
+void CEngineCamera::RotateAroundPointByY(C3DPoint centerPoint, double angle) {
+	rotateAroundPoint(centerPoint, angle, 0, 1, 0);
+}
+
+// Вращение относительно оси OZ вокруг заданной точки
+void CEngineCamera::RotateAroundPointByZ(C3DPoint centerPoint, double angle) {
+	rotateAroundPoint(centerPoint, angle, 0, 0, 1);
 }

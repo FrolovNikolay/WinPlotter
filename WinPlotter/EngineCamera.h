@@ -4,7 +4,8 @@
 #include "Model.h"
 
 /*
-* Класс движка, который переводит трёхмерные объекты пространства графика в двухмерные объекты контекста окна отрисовки
+* Класс движка, который переводит трёхмерные объекты пространства графика в двухмерные объекты контекста окна отрисовки.
+* Камера описывается в системе UVN.
 */
 class CEngineCamera
 {
@@ -12,7 +13,26 @@ public:
 	CEngineCamera(int clientWidth, int clientHeight);
 
 	// Устанавливает камеру в заданную точку трёхмерного пространства
-	void SetPosition(C3DPoint point);
+	void SetPosition(C3DPoint position);
+
+	// Устанавливает точку, в какую "смотрит" камера
+	void SetViewDirection(C3DPoint viewDirection);
+
+	// Устанавливает вертикальный вектор камеры (куда "смотрит" вверх камеры)
+	void SetUpVector(C3DPoint upVector);
+
+	// Двигает камеру вперёд
+	void MoveForward(double speed = 1.0f);
+
+	// Вращает камеру на угол относительно осей OX, OY и OZ
+	void RotateByX(double angle);
+	void RotateByY(double angle);
+	void RotateByZ(double angle);
+
+	// Вращает камеру на угол вокруг заданной точки относительно осей
+	void RotateAroundPointByX(C3DPoint centerPoint, double angle);
+	void RotateAroundPointByY(C3DPoint centerPoint, double angle);
+	void RotateAroundPointByZ(C3DPoint centerPoint, double angle);
 
 	// Устанавливает размеры клиентской области ширины и высоты окна
 	void SetWindowSize(int clientWidth, int clientHeight);
@@ -22,24 +42,27 @@ public:
 	void Render(const C3DModel& object, C2DModel& renderedObject);
 
 private:
-	// Положение камеры в трёхмерном пространстве и матрица переноса
+	// Положение камеры в трёхмерном пространстве
 	C3DPoint Position;
-	CMatrix44 MovingMatrix;
 
-	// Углы поворота камеры (в радианах) и их обратные матрицы поворота
-	double AngleX, AngleY, AngleZ;
-	CMatrix44 inverseRotateMatrixX, inverseRotateMatrixY, inverseRotateMatrixZ;
+	// Направление камеры (вектор N)
+	C3DPoint ViewDirection;
 
-	// Для каждого направления угла делаем метод, который обновляет соответствующую обратную матрицу поворота 
-	void UpdateInverseRotateMatrixX(double angleX);
-	void UpdateInverseRotateMatrixY(double angleY);
-	void UpdateInverseRotateMatrixZ(double angleZ);
+	// Вертикальный вектор камеры (вектор V)
+	C3DPoint UpVector;
 
-	// Общая вычисленная матрица преобразования координат трёхмерного пространства в координаты камеры
-	CMatrix44 TransfromMatrix;
+	// Вектор, направленный вправо (он же векторное произведение U = V x N)
+	C3DPoint RightVector;
+	// Обновляет вектор U при изменений первых N или V
+	void UpdateRightVector();
 
+	// Матрица преобразования координат из системы XYZ объекта в систему UVN
+	CMatrix44 TransformMatrix;
 	// Обновляет эту матрицу в случае изменения положения и вращения камеры
 	void UpdateTransformMatrix();
+
+	// Размер шага передвижения камеры
+	double stepSize;
 
 	// Расстояние обзора
 	double ViewDistance;
@@ -70,5 +93,11 @@ private:
 
 	// Возвращает преобразованные координаты точки при помощи матрицы преобразований
 	C3DPoint modifyPoint(C3DPoint originPoint) const;
+
+	// Вращает камеру относительно прямой, задаваемой уравнением x_value * X + y_value * Y + z_value * Z = 0
+	void rotate(double angle, double x_value, double y_value, double z_value);
+
+	// Вращает камеру вокруг точки относительно прямой
+	void rotateAroundPoint(C3DPoint point, double angle, double x_value, double y_value, double z_value);
 };
 

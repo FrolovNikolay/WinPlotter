@@ -1,5 +1,5 @@
 ﻿#include "Matrix44.h"
-
+#include <assert.h>
 
 CMatrix44::CMatrix44()
 {
@@ -78,22 +78,20 @@ C3DPoint CMatrix44::ProjectPoint(const C3DPoint originPoint) const {
 }
 
 double CMatrix44::Get(int row, int column) const {
-	if (0 <= row && row < MatrixSize && 0 <= column && column < MatrixSize)
-	{
-		return elements[row][column];
-	} else
-	{
-		throw CMatrix44::OutOfRange();
-	}
+	assert(0 <= row && row < MatrixSize && 0 <= column && column < MatrixSize);
+	return elements[row][column];
 }
 
 void CMatrix44::Set(int row, int column, double value) {
-	if (0 <= row && row < MatrixSize && 0 <= column && column < MatrixSize)
-	{
-		elements[row][column] = value;
-	}
-	else
-	{
-		throw CMatrix44::OutOfRange();
+	assert(0 <= row && row < MatrixSize && 0 <= column && column < MatrixSize);
+	elements[row][column] = value;
+}
+
+void CMatrix44::Update(const double elements_[4][4])
+{
+	for (int i = 0; i < MatrixSize; i++) {
+		for (int j = 0; j < MatrixSize; j++) {
+			elements[i][j] = elements_[i][j];
+		}
 	}
 }
