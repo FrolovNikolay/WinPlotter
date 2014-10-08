@@ -17,6 +17,7 @@ description:
 class CWinMain
 {
 public:
+	CWinMain() {};
 	static bool registerClass( HINSTANCE hInstance );	// зарегистрировать класс окна
 	HWND create( HINSTANCE hInctance );					// создать экземпляр окна
 	void show( int cmdShow );							// показать окно

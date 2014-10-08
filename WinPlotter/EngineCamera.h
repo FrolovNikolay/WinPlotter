@@ -10,7 +10,7 @@
 class CEngineCamera
 {
 public:
-	CEngineCamera(int clientWidth, int clientHeight);
+	CEngineCamera(int clientWidth = 640, int clientHeight = 480);
 
 	// Устанавливает камеру в заданную точку трёхмерного пространства
 	void SetPosition(C3DPoint position);

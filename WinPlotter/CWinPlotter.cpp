@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include "resource.h"
 
+#include "3DPoint.h"
+
 LRESULT __stdcall CWinPlotter::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( uMsg == WM_NCCREATE ) {
@@ -9,6 +11,9 @@ LRESULT __stdcall CWinPlotter::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, 
 	}
 	CWinPlotter* wnd = reinterpret_cast< CWinPlotter* >( GetWindowLong( hWnd, GWL_USERDATA ) );
 	switch( uMsg ) {
+		case WM_CREATE:
+			wnd->OnCreate();
+			return 0;
 		case WM_SIZE:
 			wnd->Invalidate();
 			return 0;
@@ -54,8 +59,44 @@ void CWinPlotter::OnDestroy()
 	::PostQuitMessage( 0 );
 }
 
+void CWinPlotter::OnSize()
+{
+	UpdateScreenSize();
+}
+
+void CWinPlotter::UpdateScreenSize()
+{
+	RECT rect;
+	GetClientRect(handle, &rect);
+	engine.SetWindowSize(rect.right - rect.left, rect.bottom - rect.top);
+}
+
+void CWinPlotter::OnCreate()
+{
+	// Создаём тестовый объект - пирамидку
+	testObject.AddPoint(C3DPoint(5, 5, 0));
+	testObject.AddPoint(C3DPoint(5, -5, 0));
+	testObject.AddPoint(C3DPoint(-5, -5, 0));
+	testObject.AddPoint(C3DPoint(-5, 5, 0));
+	testObject.AddPoint(C3DPoint(0, 0, 5));
+	testObject.AddTriangle(0, 1, 4);
+	testObject.AddTriangle(1, 2, 4);
+	testObject.AddTriangle(2, 3, 4);
+	testObject.AddTriangle(3, 0, 4);
+
+	// Устанавливаем позицию камеры
+	engine.SetPosition(C3DPoint(8, 8, 8));
+	engine.SetViewDirection(C3DPoint(0, 0, 0));
+}
+
 void CWinPlotter::PaintObject()
 {
+	// Передаём размеры окна
+	UpdateScreenSize();
+
+	// Делаем рендер
+	engine.Render(testObject, renderedObject);
+
 	RECT rect;
 	GetClientRect( handle, &rect );
 	PAINTSTRUCT paintStruct;
@@ -67,6 +108,7 @@ void CWinPlotter::PaintObject()
 	currentBitmap = CreateCompatibleBitmap( currentDC, rect.right - rect.left, rect.bottom - rect.top );
 	PatBlt( currentDC, 0, 0, rect.right - rect.left, rect.bottom - rect.top, BLACKNESS );
 
+	/*
 	HBRUSH redBrush = ::CreateSolidBrush( red );
 	HBRUSH blueBrush = ::CreateSolidBrush( blue );
 
@@ -79,6 +121,28 @@ void CWinPlotter::PaintObject()
 	::Ellipse( currentDC, rx - 25, ry - 25, rx + 25, ry + 25 );
 	SelectObject( currentDC, currentBrush );
 	DeleteObject( blueBrush );
+	*/
+
+	// Начинаем брать все элементы из двухмерного объекта и рисовать их на экране
+
+	// Создаём и выбираем кисть
+	HBRUSH blueBrush = ::CreateSolidBrush(blue);
+	HBRUSH currentBrush = (HBRUSH)::SelectObject(currentDC, blueBrush);
+	SelectObject(currentDC, currentBrush);
+
+	// Отрезки
+	for (auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++) {
+		MoveToEx(currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, NULL);
+		LineTo(currentDC, renderedObject.Points[segment->Second].X, renderedObject.Points[segment->Second].Y);
+	}
+	// Треугольники
+	for (auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++) {
+		MoveToEx(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, NULL);
+		LineTo(currentDC, renderedObject.Points[triangle->Second].X, renderedObject.Points[triangle->Second].Y);
+		LineTo(currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y);
+		LineTo(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y);
+	}
+	DeleteObject(blueBrush);
 
 	DeleteObject( currentBitmap );
 	DeleteDC( currentDC );

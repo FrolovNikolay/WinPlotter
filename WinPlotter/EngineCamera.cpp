@@ -11,7 +11,7 @@ ViewDistance(1), ClientHeight(clientHeight), ClientWidth(clientWidth), stepSize(
 {
 	// Задаём начальное положение камеры
 	Position = C3DPoint(5, 0, 5);
-	ViewDirection = C3DPoint(0, 0, 0);
+	ViewDirection = C3DPoint(1, 1, 1);
 	UpVector = C3DPoint(0, 1, 0);
 
 	UpdateTransformMatrix();
@@ -148,10 +148,12 @@ void CEngineCamera::SetPosition(C3DPoint point) {
 
 void CEngineCamera::SetViewDirection(C3DPoint viewDirection_) {
 	ViewDirection = viewDirection_;
+	UpdateTransformMatrix();
 }
 
 void CEngineCamera::SetUpVector(C3DPoint upVector_) {
 	UpVector = upVector_;
+	UpdateTransformMatrix();
 }
 
 void CEngineCamera::MoveForward(double speed) {

@@ -39,7 +39,15 @@ public:
 	void AddSegment(int firstIndex, int secondIndex);
 
 	// ƒобавл¤ет треугольник, соедин¤ющий три вершины
-	void AddTriangle(int firstIndex, int secondIndex, int thirdIndex);
+	void AddTriangle(int firstIndex, int secondIndex, int thirdIndex)
+	{
+		if (firstIndex >= Points.size() || secondIndex >= Points.size() || thirdIndex >= Points.size()) {
+			throw CModel<T>::OutOfRange();
+		}
+		else {
+			Triangles.push_back(CTriangleIndex(firstIndex, secondIndex, thirdIndex));
+		}
+	}
 
 	// ќчищает структуру
 	void Clear()
