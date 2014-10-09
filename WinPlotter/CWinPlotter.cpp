@@ -169,7 +169,7 @@ void CWinPlotter::moveX( LONG times )
 
 void CWinPlotter::moveY( LONG times )
 {
-	engine.MoveUp(times * engineMovementFactor);
+	engine.MoveUp(-times * engineMovementFactor);
 	Invalidate();
 }
 
