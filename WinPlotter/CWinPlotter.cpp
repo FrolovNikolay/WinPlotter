@@ -86,7 +86,7 @@ void CWinPlotter::OnCreate()
 
 	// Устанавливаем позицию камеры
 	engine.SetPosition(C3DPoint(8, 8, 8));
-	engine.SetViewDirection(C3DPoint(0, 0, 0));
+	engine.SetViewDirection(C3DPoint(-1, -1, -1));
 }
 
 void CWinPlotter::PaintObject()
@@ -125,10 +125,12 @@ void CWinPlotter::PaintObject()
 
 	// Начинаем брать все элементы из двухмерного объекта и рисовать их на экране
 
-	// Создаём и выбираем кисть
-	HBRUSH blueBrush = ::CreateSolidBrush(blue);
-	HBRUSH currentBrush = (HBRUSH)::SelectObject(currentDC, blueBrush);
-	SelectObject(currentDC, currentBrush);
+	// Создаём и выбираем перо для отрисовки линий
+	// HBRUSH blueBrush = ::CreateSolidBrush(RGB(255, 255, 255));
+	// HBRUSH currentBrush = (HBRUSH)::SelectObject(currentDC, blueBrush);
+
+	HPEN linePen = ::CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
+	HPEN currentPen = (HPEN)::SelectObject(currentDC, linePen);
 
 	// Отрезки
 	for (auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++) {
@@ -142,8 +144,9 @@ void CWinPlotter::PaintObject()
 		LineTo(currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y);
 		LineTo(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y);
 	}
-	DeleteObject(blueBrush);
+	DeleteObject(linePen);
 
+	SelectObject(currentDC, currentPen);
 	DeleteObject( currentBitmap );
 	DeleteDC( currentDC );
 
