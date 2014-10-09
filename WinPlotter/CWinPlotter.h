@@ -36,7 +36,13 @@ private:
 	int size = 25;
 
 	// Экземпляр движка, который будет заниматься рендером объекта
-	CEngineCamera engine; 
+	CEngineCamera engine;
+	// Коэффициент, с которым будет приближаться/удаляться объект
+	const double engineZoomFactor = 0.03f;
+	// Коэффициент, с которым будет вращаться объект
+	const double engineRotationFactor = 0.005f;
+	// Коэффициент, с которым будет перемещаться камера
+	const double engineMovementFactor = 0.1f;
 
 	// TODO: заменить заглушку на реальный объект
 	// Трёхмерный примитив, который будет рисоваться на экране

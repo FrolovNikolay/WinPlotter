@@ -22,6 +22,14 @@ double C3DPoint::length() const {
 	return sqrt(X * X + Y * Y + Z * Z);
 }
 
+C3DPoint C3DPoint::normalize() const {
+	double len = length();
+	if (len < 1e-9) {
+		throw C3DPoint::NullLength();
+	}
+	return C3DPoint(X / len, Y / len, Z / len);
+}
+
 C3DPoint C3DPoint::cross(C3DPoint otherPoint) const {
 	C3DPoint result;
 	

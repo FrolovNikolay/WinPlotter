@@ -20,6 +20,11 @@ public:
 	// Длина вектора
 	double length() const;
 
+	// Возвращает нормализованный вектор
+	C3DPoint normalize() const;
+	class NullLength {
+	};
+
 	// Векторное произведение
 	C3DPoint cross(C3DPoint other) const;
 

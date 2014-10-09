@@ -15,14 +15,21 @@ public:
 	// Устанавливает камеру в заданную точку трёхмерного пространства
 	void SetPosition(C3DPoint position);
 
-	// Устанавливает точку, в какую "смотрит" камера
+	// Устанавливает вектор, в направлении которого "смотрит" камера
 	void SetViewDirection(C3DPoint viewDirection);
+
+	// Устанавливает точку, куда "смотрит" камера
+	void SetViewPoint(C3DPoint viewPoint);
 
 	// Устанавливает вертикальный вектор камеры (куда "смотрит" вверх камеры)
 	void SetUpVector(C3DPoint upVector);
 
-	// Двигает камеру вперёд
+	// Двигает камеру вперёд/назад
 	void MoveForward(double speed = 1.0f);
+	// Двигает камеру вверх/вниз
+	void MoveUp(double speed = 1.0f);
+	// Двигает камеру влево/вправо
+	void MoveSide(double speed = 1.0f);
 
 	// Вращает камеру на угол относительно осей OX, OY и OZ
 	void RotateByX(double angle);

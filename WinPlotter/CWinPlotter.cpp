@@ -85,8 +85,8 @@ void CWinPlotter::OnCreate()
 	testObject.AddTriangle(3, 0, 4);
 
 	// Устанавливаем позицию камеры
-	engine.SetPosition(C3DPoint(8, 8, 8));
-	engine.SetViewDirection(C3DPoint(-1, -1, -1));
+	engine.SetPosition(C3DPoint(12, 14, 6));
+	engine.SetViewPoint(C3DPoint(0, 0, 0));
 }
 
 void CWinPlotter::PaintObject()
@@ -144,6 +144,7 @@ void CWinPlotter::PaintObject()
 		LineTo(currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y);
 		LineTo(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y);
 	}
+
 	DeleteObject(linePen);
 
 	SelectObject(currentDC, currentPen);
@@ -162,31 +163,29 @@ void CWinPlotter::Invalidate()
 
 void CWinPlotter::moveX( LONG times )
 {
-	x += times;
+	engine.MoveSide(times * engineMovementFactor);
 	Invalidate();
 }
 
 void CWinPlotter::moveY( LONG times )
 {
-	y += times;
+	engine.MoveUp(times * engineMovementFactor);
 	Invalidate();
 }
 
 void CWinPlotter::rotateX( LONG times )
 {
-	rx += times;
 	Invalidate();
 }
 
 void CWinPlotter::rotateY( LONG times )
 {
-	ry += times;
 	Invalidate();
 }
 
 void CWinPlotter::zoom( LONG times )
 {
-	size += times;
+	engine.MoveForward(times * engineZoomFactor);
 	Invalidate();
 }
 
