@@ -74,19 +74,19 @@ void CWinPlotter::UpdateScreenSize()
 void CWinPlotter::OnCreate()
 {
 	// Создаём тестовый объект - пирамидку
-	testObject.AddPoint(C3DPoint(5, 5, 0));
-	testObject.AddPoint(C3DPoint(5, -5, 0));
-	testObject.AddPoint(C3DPoint(-5, -5, 0));
-	testObject.AddPoint(C3DPoint(-5, 5, 0));
-	testObject.AddPoint(C3DPoint(0, 0, 5));
-	testObject.AddTriangle(0, 1, 4);
-	testObject.AddTriangle(1, 2, 4);
-	testObject.AddTriangle(2, 3, 4);
-	testObject.AddTriangle(3, 0, 4);
+	testObject.AddPoint( C3DPoint( 5, 5, 0 ) );
+	testObject.AddPoint( C3DPoint( 5, -5, 0 ) );
+	testObject.AddPoint( C3DPoint( -5, -5, 0 ) );
+	testObject.AddPoint( C3DPoint( -5, 5, 0 ) );
+	testObject.AddPoint( C3DPoint( 0, 0, 5 ) );
+	testObject.AddTriangle( 0, 1, 4 );
+	testObject.AddTriangle( 1, 2, 4 );
+	testObject.AddTriangle( 2, 3, 4 );
+	testObject.AddTriangle( 3, 0, 4 );
 
 	// Устанавливаем позицию камеры
-	engine.SetPosition(C3DPoint(12, 14, 6));
-	engine.SetViewPoint(C3DPoint(0, 0, 0));
+	engine.SetPosition( C3DPoint( 12, 14, 6 ) );
+	engine.SetViewPoint( C3DPoint( 0, 0, 0 ) );
 }
 
 void CWinPlotter::PaintObject()
@@ -95,7 +95,7 @@ void CWinPlotter::PaintObject()
 	UpdateScreenSize();
 
 	// Делаем рендер
-	engine.Render(testObject, renderedObject);
+	engine.Render( testObject, renderedObject );
 
 	RECT rect;
 	GetClientRect( handle, &rect );
@@ -108,46 +108,26 @@ void CWinPlotter::PaintObject()
 	currentBitmap = CreateCompatibleBitmap( currentDC, rect.right - rect.left, rect.bottom - rect.top );
 	PatBlt( currentDC, 0, 0, rect.right - rect.left, rect.bottom - rect.top, BLACKNESS );
 
-	/*
-	HBRUSH redBrush = ::CreateSolidBrush( red );
-	HBRUSH blueBrush = ::CreateSolidBrush( blue );
 
-	HBRUSH currentBrush = ( HBRUSH )::SelectObject( currentDC, redBrush );
-	::Ellipse( currentDC, x - size, y - size, x + size, y + size );
-	SelectObject( currentDC, currentBrush );
-	DeleteObject( redBrush );
-
-	currentBrush = ( HBRUSH )::SelectObject( currentDC, blueBrush );
-	::Ellipse( currentDC, rx - 25, ry - 25, rx + 25, ry + 25 );
-	SelectObject( currentDC, currentBrush );
-	DeleteObject( blueBrush );
-	*/
-
-	// Начинаем брать все элементы из двухмерного объекта и рисовать их на экране
-
-	// Создаём и выбираем перо для отрисовки линий
-	// HBRUSH blueBrush = ::CreateSolidBrush(RGB(255, 255, 255));
-	// HBRUSH currentBrush = (HBRUSH)::SelectObject(currentDC, blueBrush);
-
-	HPEN linePen = ::CreatePen(PS_SOLID, 1, RGB(0, 255, 0));
-	HPEN currentPen = (HPEN)::SelectObject(currentDC, linePen);
+	HPEN linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 255, 0 ) );
+	HPEN currentPen = ( HPEN )::SelectObject( currentDC, linePen );
 
 	// Отрезки
-	for (auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++) {
-		MoveToEx(currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, NULL);
-		LineTo(currentDC, renderedObject.Points[segment->Second].X, renderedObject.Points[segment->Second].Y);
+	for( auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++ ) {
+		MoveToEx( currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, NULL );
+		LineTo( currentDC, renderedObject.Points[segment->Second].X, renderedObject.Points[segment->Second].Y );
 	}
 	// Треугольники
-	for (auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++) {
-		MoveToEx(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, NULL);
-		LineTo(currentDC, renderedObject.Points[triangle->Second].X, renderedObject.Points[triangle->Second].Y);
-		LineTo(currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y);
-		LineTo(currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y);
+	for( auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++ ) {
+		MoveToEx( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, NULL );
+		LineTo( currentDC, renderedObject.Points[triangle->Second].X, renderedObject.Points[triangle->Second].Y );
+		LineTo( currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y );
+		LineTo( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y );
 	}
 
-	DeleteObject(linePen);
+	DeleteObject( linePen );
 
-	SelectObject(currentDC, currentPen);
+	SelectObject( currentDC, currentPen );
 	DeleteObject( currentBitmap );
 	DeleteDC( currentDC );
 
@@ -163,13 +143,13 @@ void CWinPlotter::Invalidate()
 
 void CWinPlotter::moveX( LONG times )
 {
-	engine.MoveSide(times * engineMovementFactor);
+	engine.MoveSide( times * engineMovementFactor );
 	Invalidate();
 }
 
 void CWinPlotter::moveY( LONG times )
 {
-	engine.MoveUp(-times * engineMovementFactor);
+	engine.MoveUp( -times * engineMovementFactor );
 	Invalidate();
 }
 
@@ -185,13 +165,11 @@ void CWinPlotter::rotateY( LONG times )
 
 void CWinPlotter::zoom( LONG times )
 {
-	engine.MoveForward(times * engineZoomFactor);
+	engine.MoveForward( times * engineZoomFactor );
 	Invalidate();
 }
 
 void CWinPlotter::clear()
 {
-	red = RGB( 0, 0, 0 );
-	blue = RGB( 0, 0, 0 );
 	Invalidate();
 }
