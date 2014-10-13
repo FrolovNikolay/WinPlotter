@@ -114,12 +114,12 @@ void CWinPlotter::PaintObject()
 
 	// Отрезки
 	for( auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++ ) {
-		MoveToEx( currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, NULL );
+		MoveToEx( currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, 0 );
 		LineTo( currentDC, renderedObject.Points[segment->Second].X, renderedObject.Points[segment->Second].Y );
 	}
 	// Треугольники
 	for( auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++ ) {
-		MoveToEx( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, NULL );
+		MoveToEx( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, 0 );
 		LineTo( currentDC, renderedObject.Points[triangle->Second].X, renderedObject.Points[triangle->Second].Y );
 		LineTo( currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y );
 		LineTo( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y );

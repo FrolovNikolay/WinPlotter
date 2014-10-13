@@ -11,8 +11,8 @@ int __stdcall wWinMain( HINSTANCE hInstance, HINSTANCE previnstance, LPWSTR comm
 	HWND hWnd = window.create( hInstance );
 
 	if( hWnd == 0 ) {
-		MessageBox( 0, L"WTF", L"WTF", MB_OK );
-		return -1;
+		MessageBox( 0, L"Не удалось создать окно", L"Ошибка", MB_OK | MB_ICONERROR );
+		return EXIT_FAILURE;
 	}
 	window.show( nCmdShow );
 
@@ -22,5 +22,5 @@ int __stdcall wWinMain( HINSTANCE hInstance, HINSTANCE previnstance, LPWSTR comm
 		::DispatchMessage( &msg );
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }
