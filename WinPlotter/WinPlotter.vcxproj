@@ -65,15 +65,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="2DPoint.h" />
+    <ClInclude Include="CFormula.h" />
+    <ClInclude Include="Enums.h" />
+    <ClInclude Include="IStmExp.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="3DPoint.h" />
     <ClInclude Include="SegmentIndex.h" />
+    <ClInclude Include="StmExpRealis.h" />
     <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="EngineCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2DPoint.cpp" />
+    <ClCompile Include="CFormula.cpp" />
     <ClCompile Include="CWinMain.cpp" />
     <ClCompile Include="CWinPlotter.cpp" />
     <ClCompile Include="Model.cpp" />
