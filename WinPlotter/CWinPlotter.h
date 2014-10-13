@@ -1,8 +1,11 @@
 ﻿#pragma once
 #include "Windows.h"
+#include "EngineCamera.h"
+#include "Model.h"
 
 class CWinPlotter {
 public:
+	CWinPlotter() {};
 	static bool registerClass( HINSTANCE hInstance );
 	HWND create( HINSTANCE hInctance, HWND parent );
 	void show( int cmdShow );
@@ -17,15 +20,36 @@ public:
 	COLORREF red = RGB( 255, 0, 0 );
 	COLORREF blue = RGB( 0, 0, 255 );
 protected:
+	void OnCreate();
 	void OnDestroy();
+	void OnSize();
 	void Invalidate();
 	void PaintObject();
+
+	// Обновляет размеры проекции для движка
+	void UpdateScreenSize();
 
 private:
 	HWND handle;
 	int x = 25, y = 25;
 	int rx = 75, ry = 25;
 	int size = 25;
+
+	// Экземпляр движка, который будет заниматься рендером объекта
+	CEngineCamera engine;
+	// Коэффициент, с которым будет приближаться/удаляться объект
+	const double engineZoomFactor = 0.03f;
+	// Коэффициент, с которым будет вращаться объект
+	const double engineRotationFactor = 0.005f;
+	// Коэффициент, с которым будет перемещаться камера
+	const double engineMovementFactor = 0.1f;
+
+	// TODO: заменить заглушку на реальный объект
+	// Трёхмерный примитив, который будет рисоваться на экране
+	C3DModel testObject;
+
+	// Структура двухмерного объекта, который будет непосредственно переводиться в вызовы WinAPI
+	C2DModel renderedObject;
 
 	static LRESULT __stdcall windowProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
 };

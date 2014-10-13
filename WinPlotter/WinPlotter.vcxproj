@@ -66,12 +66,12 @@
   <ItemGroup>
     <ClInclude Include="2DPoint.h" />
     <ClInclude Include="CFormula.h" />
-    <ClInclude Include="Enums.h" />
-    <ClInclude Include="IStmExp.h" />
+    <ClInclude Include="CWinMain.h" />
+    <ClInclude Include="CWinPlotter.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="3DPoint.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SegmentIndex.h" />
-    <ClInclude Include="StmExpRealis.h" />
     <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="EngineCamera.h" />
@@ -88,6 +88,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix44.cpp" />
     <ClCompile Include="EngineCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WinPlotter.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

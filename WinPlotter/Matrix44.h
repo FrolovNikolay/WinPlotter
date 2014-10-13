@@ -29,6 +29,9 @@ public:
 	// Присваивает элемент M[row][column] = value
 	void Set(int row, int column, double value);
 
+	// Обновляет элементы
+	void Update(const double elements[4][4]);
+
 	// Размер матрицы
 	static const int MatrixSize = 4;
 

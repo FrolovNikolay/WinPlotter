@@ -10,6 +10,7 @@ void CModel<T>::AddSegment(int firstIndex, int secondIndex) {
 	}
 }
 
+/*
 template <typename T>
 void CModel<T>::AddTriangle(int firstIndex, int secondIndex, int thirdIndex) {
 	if (firstIndex >= Points.size || secondIndex >= Points.size || thirdIndex >= Points.size) {
@@ -19,3 +20,4 @@ void CModel<T>::AddTriangle(int firstIndex, int secondIndex, int thirdIndex) {
 		Triangles.push_back(CTriangleIndex(firstIndex, secondIndex, thirdIndex));
 	}
 }
+*/
