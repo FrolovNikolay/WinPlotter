@@ -36,7 +36,15 @@ public:
 	};
 
 	// Добавляет отрезок, соединяющий две вершины
-	void AddSegment(int firstIndex, int secondIndex);
+	void AddSegment(int firstIndex, int secondIndex)
+	{
+		if (firstIndex >= Points.size() || secondIndex >= Points.size()) {
+			throw CModel<T>::OutOfRange();
+		}
+		else {
+			Segments.push_back(CSegmentIndex(firstIndex, secondIndex));
+		}
+	}
 
 	// Добавляет треугольник, соединяющий три вершины
 	void AddTriangle(int firstIndex, int secondIndex, int thirdIndex)

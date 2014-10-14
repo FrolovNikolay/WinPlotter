@@ -84,6 +84,19 @@ void CWinPlotter::OnCreate()
 	testObject.AddTriangle( 2, 3, 4 );
 	testObject.AddTriangle( 3, 0, 4 );
 
+	// Создаём оси
+	axisObject.AddPoint( C3DPoint(axisLength, 0, 0) );
+	axisObject.AddPoint( C3DPoint(-axisLength, 0, 0) );
+	axisObject.AddSegment( 0, 1 );
+
+	axisObject.AddPoint( C3DPoint(0, axisLength, 0) );
+	axisObject.AddPoint( C3DPoint(0, -axisLength, 0) );
+	axisObject.AddSegment( 2, 3 );
+
+	axisObject.AddPoint( C3DPoint(0, 0, axisLength) );
+	axisObject.AddPoint( C3DPoint(0, 0, -axisLength) );
+	axisObject.AddSegment( 4, 5 );
+
 	// Устанавливаем позицию камеры
 	engine.SetPosition( C3DPoint( 12, 14, 6 ) );
 	engine.SetViewPoint( C3DPoint( 0, 0, 0 ) );
@@ -94,8 +107,10 @@ void CWinPlotter::PaintObject()
 	// Передаём размеры окна
 	UpdateScreenSize();
 
-	// Делаем рендер
+	// Делаем рендер объекта
 	engine.Render( testObject, renderedObject );
+	// Делаем рендер осей
+	engine.Render( axisObject, axisRenderedObject );
 
 	RECT rect;
 	GetClientRect( handle, &rect );
@@ -125,10 +140,20 @@ void CWinPlotter::PaintObject()
 		LineTo( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y );
 	}
 
-	DeleteObject( linePen );
+	// Кисть для осей координат
+	HPEN axisPen = ::CreatePen(PS_SOLID, 1, RGB(41, 128, 185));
+	currentPen = (HPEN)::SelectObject(currentDC, axisPen);
+	for (auto segment = axisRenderedObject.Segments.begin(); segment != axisRenderedObject.Segments.end(); segment++) {
+		MoveToEx(currentDC, axisRenderedObject.Points[segment->First].X, axisRenderedObject.Points[segment->First].Y, 0);
+		LineTo(currentDC, axisRenderedObject.Points[segment->Second].X, axisRenderedObject.Points[segment->Second].Y);
+	}
 
-	SelectObject( currentDC, currentPen );
-	DeleteObject( currentBitmap );
+
+	::DeleteObject( linePen );
+	::DeleteObject( axisPen );
+
+	::SelectObject( currentDC, currentPen );
+	::DeleteObject( currentBitmap );
 	DeleteDC( currentDC );
 
 	EndPaint( handle, &paintStruct );
@@ -155,11 +180,13 @@ void CWinPlotter::moveY( LONG times )
 
 void CWinPlotter::rotateX( LONG times )
 {
+	engine.RotateSide(times * engineRotationFactor);
 	Invalidate();
 }
 
 void CWinPlotter::rotateY( LONG times )
 {
+	engine.RotateUp(times * engineRotationFactor);
 	Invalidate();
 }
 

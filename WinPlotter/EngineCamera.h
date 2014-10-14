@@ -41,6 +41,10 @@ public:
 	void RotateAroundPointByY(C3DPoint centerPoint, double angle);
 	void RotateAroundPointByZ(C3DPoint centerPoint, double angle);
 
+	// Вращает камеру вверх/вниз и влево/вправо
+	void RotateSide(double angle);
+	void RotateUp(double angle);
+
 	// Устанавливает размеры клиентской области ширины и высоты окна
 	void SetWindowSize(int clientWidth, int clientHeight);
 

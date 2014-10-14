@@ -37,7 +37,7 @@ private:
 	// Коэффициент, с которым будет приближаться/удаляться объект
 	const double engineZoomFactor = 0.03f;
 	// Коэффициент, с которым будет вращаться объект
-	const double engineRotationFactor = 0.005f;
+	const double engineRotationFactor = 0.0005f;
 	// Коэффициент, с которым будет перемещаться камера
 	const double engineMovementFactor = 0.1f;
 
@@ -45,8 +45,15 @@ private:
 	// Трёхмерный примитив, который будет рисоваться на экране
 	C3DModel testObject;
 
+	// Вспомогательный объект, содержащий оси координат (с направлением)
+	C3DModel axisObject;
+	// Длина отрисовки осей в каждое из направлений
+	const int axisLength = 10;
+
 	// Структура двухмерного объекта, который будет непосредственно переводиться в вызовы WinAPI
 	C2DModel renderedObject;
+	// Аналог для объекта с осями
+	C2DModel axisRenderedObject;
 
 	static LRESULT __stdcall windowProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
 };

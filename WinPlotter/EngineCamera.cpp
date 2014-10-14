@@ -94,7 +94,7 @@ void CEngineCamera::filter() {
 	auto segment = cameraModel.Segments.begin();
 	while (segment != cameraModel.Segments.end()) {
 		// Если попадает под условие (один из концов находится среди удаляемых точек), то удаляем
-		if (pointNumbersForErase.find(segment->First) != pointNumbersForErase.end() ||
+		if (pointNumbersForErase.find(segment->First) != pointNumbersForErase.end() &&
 			pointNumbersForErase.find(segment->Second) != pointNumbersForErase.end()) {
 			segment = cameraModel.Segments.erase(segment);
 		}
@@ -108,8 +108,8 @@ void CEngineCamera::filter() {
 	auto triangle = cameraModel.Triangles.begin();
 	while (triangle != cameraModel.Triangles.end()) {
 		// Если попадает под условие (одна из вершин треугольника попадает в точки), то удаляем
-		if (pointNumbersForErase.find(triangle->First) != pointNumbersForErase.end() ||
-			pointNumbersForErase.find(triangle->Second) != pointNumbersForErase.end() ||
+		if (pointNumbersForErase.find(triangle->First) != pointNumbersForErase.end() &&
+			pointNumbersForErase.find(triangle->Second) != pointNumbersForErase.end() &&
 			pointNumbersForErase.find(triangle->Third) != pointNumbersForErase.end()) {
 			triangle = cameraModel.Triangles.erase(triangle);
 		}
@@ -283,4 +283,13 @@ void CEngineCamera::RotateAroundPointByY(C3DPoint centerPoint, double angle) {
 // Вращение относительно оси OZ вокруг заданной точки
 void CEngineCamera::RotateAroundPointByZ(C3DPoint centerPoint, double angle) {
 	rotateAroundPoint(centerPoint, angle, 0, 0, 1);
+}
+
+void CEngineCamera::RotateSide(double angle) {
+	// rotateAroundPoint(Position, angle, UpVector.X, UpVector.Y, UpVector.Z);
+	rotate(angle, UpVector.X, UpVector.Y, UpVector.Z);
+}
+
+void CEngineCamera::RotateUp(double angle) {
+	rotateAroundPoint(Position, angle, RightVector.X, RightVector.Y, RightVector.Z);
 }
