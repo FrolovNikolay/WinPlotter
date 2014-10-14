@@ -127,6 +127,13 @@ void CWinPlotter::PaintObject()
 	HPEN linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 255, 0 ) );
 	HPEN currentPen = ( HPEN )::SelectObject( currentDC, linePen );
 
+	HBRUSH pointBrush = ::CreateSolidBrush( RGB( 0, 255, 0 ) );
+	HBRUSH currentBrush = ( HBRUSH )::SelectObject( currentDC, pointBrush );
+	// Вершины
+	for (auto point = renderedObject.Points.begin(); point != renderedObject.Points.end(); point++) {
+		Ellipse( currentDC, point->X - 5, point->Y - 5, point->X + 5, point->Y + 5);
+	}
+
 	// Отрезки
 	for( auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++ ) {
 		MoveToEx( currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, 0 );
@@ -148,6 +155,8 @@ void CWinPlotter::PaintObject()
 		LineTo(currentDC, axisRenderedObject.Points[segment->Second].X, axisRenderedObject.Points[segment->Second].Y);
 	}
 
+	::DeleteObject( pointBrush );
+	::DeleteObject( currentBrush );
 
 	::DeleteObject( linePen );
 	::DeleteObject( axisPen );
