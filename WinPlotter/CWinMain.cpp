@@ -377,7 +377,7 @@ void CWinMain::TakeFormula()
 	char* outbuff = new char[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
 	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
-	// formula.SetEpsilon( 0.1 );
+	formula.SetEpsilon( 0.5 );
 	formula.SetFormula( outbuff );
 	delete[] buff;
 	delete[] outbuff;
