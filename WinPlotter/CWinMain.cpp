@@ -2,8 +2,8 @@
 author: Timur Khusaenov
 class: CWinMain
 description:
-	 ласс реализует интерфейс, примен¤емый в приложении WinPlotter.
-	ƒл¤ корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
+	Класс реализует интерфейс, применяемый в приложении WinPlotter.
+	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
 */
 
 const int indentFromBorder = 25;
@@ -58,7 +58,7 @@ HWND CWinMain::createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id 
 }
 
 /* 
-обертка над дефолтным обработчиком нажати¤ кнопок
+обертка над дефолтным обработчиком нажатия кнопок
 */
 LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -243,21 +243,22 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	hChild = winPlotter.create( hInstance, hWnd );
 	
 	if ( hChild == 0 ) {
-		MessageBox( 0, L"WTF", L"WTF", MB_OK );
+		MessageBox( 0, L"Не удалось создать дочернее окно", L"Ошибка", MB_OK | MB_ICONERROR );
+		OnDestroy();
 	}
 	winPlotter.show( SW_SHOW );
 	SetWindowPos( hChild, HWND_BOTTOM, 0, 0, width, height, 0 );
 	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hChild, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
 
-	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен 2 * размеру кнопки
-	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен 2 * размеру кнопки
+	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
+	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
 
 	hButtonMoveBot = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
 	hButtonMoveTop = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
 	hButtonMoveLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
 	hButtonMoveRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
 
-	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ так как положение кнопки считаетс¤ от левого верхнего угла
+	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ + 25 так как положение кнопки считаетс¤ от левого верхнего угла
 	// buttonBlockPosY = height - buttonSize - indentFromBorder;
 
 	hButtonRotateDown = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
@@ -370,7 +371,7 @@ void CWinMain::TakeFormula()
 	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
 	TCHAR* buff = new TCHAR[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
-	// отправить строку ѕаше
+	// отправить строку Паше
 }
 
 LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )

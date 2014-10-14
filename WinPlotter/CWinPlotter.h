@@ -5,7 +5,6 @@
 
 class CWinPlotter {
 public:
-	CWinPlotter() {};
 	static bool registerClass( HINSTANCE hInstance );
 	HWND create( HINSTANCE hInctance, HWND parent );
 	void show( int cmdShow );
@@ -17,8 +16,6 @@ public:
 	void zoom( LONG times = 1 );
 	void clear();
 
-	COLORREF red = RGB( 255, 0, 0 );
-	COLORREF blue = RGB( 0, 0, 255 );
 protected:
 	void OnCreate();
 	void OnDestroy();
