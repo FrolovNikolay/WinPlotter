@@ -207,5 +207,6 @@ void CWinPlotter::zoom( LONG times )
 
 void CWinPlotter::clear()
 {
+	testObject.Clear();
 	Invalidate();
 }

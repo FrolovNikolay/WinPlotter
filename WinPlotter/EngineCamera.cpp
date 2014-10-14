@@ -291,5 +291,5 @@ void CEngineCamera::RotateSide(double angle) {
 }
 
 void CEngineCamera::RotateUp(double angle) {
-	rotateAroundPoint(Position, angle, RightVector.X, RightVector.Y, RightVector.Z);
+	rotate(angle, RightVector.X, RightVector.Y, RightVector.Z);
 }

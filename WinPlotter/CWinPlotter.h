@@ -5,6 +5,9 @@
 
 class CWinPlotter {
 public:
+	// Трёхмерный примитив, который будет рисоваться на экране
+	C3DModel testObject;
+
 	static bool registerClass( HINSTANCE hInstance );
 	HWND create( HINSTANCE hInctance, HWND parent );
 	void show( int cmdShow );
@@ -28,9 +31,6 @@ protected:
 
 private:
 	HWND handle;
-	int x = 25, y = 25;
-	int rx = 75, ry = 25;
-	int size = 25;
 
 	// Экземпляр движка, который будет заниматься рендером объекта
 	CEngineCamera engine;
@@ -40,10 +40,6 @@ private:
 	const double engineRotationFactor = 0.0005f;
 	// Коэффициент, с которым будет перемещаться камера
 	const double engineMovementFactor = 0.1f;
-
-	// TODO: заменить заглушку на реальный объект
-	// Трёхмерный примитив, который будет рисоваться на экране
-	C3DModel testObject;
 
 	// Вспомогательный объект, содержащий оси координат (с направлением)
 	C3DModel axisObject;

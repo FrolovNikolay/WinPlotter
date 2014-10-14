@@ -6,6 +6,8 @@ description:
 	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
 */
 
+#include "CFormula.h"
+
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -368,10 +370,22 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::TakeFormula()
 {
+	size_t i;
+	CFormula formula;
 	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
 	TCHAR* buff = new TCHAR[textLength + 1];
+	char* outbuff = new char[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
-	// отправить строку Паше
+	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
+	formula.SetFormula( outbuff );
+	delete[] buff;
+	delete[] outbuff;
+
+	winPlotter.testObject.Clear();
+	auto res = formula.Calculate();
+	for( int j = 0; j < res['x'].size(); j++ ) {
+		winPlotter.testObject.AddPoint( C3DPoint( res['x'][j], res['y'][j], res['z'][j] ) );
+	}
 }
 
 LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )
