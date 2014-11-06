@@ -65,6 +65,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="2DPoint.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CFormula.h" />
     <ClInclude Include="CWinMain.h" />
     <ClInclude Include="CWinPlotter.h" />
@@ -81,6 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2DPoint.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CFormula.cpp" />
     <ClCompile Include="CWinMain.cpp" />
     <ClCompile Include="CWinPlotter.cpp" />
