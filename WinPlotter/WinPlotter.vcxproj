@@ -69,6 +69,7 @@
     <ClInclude Include="CFormula.h" />
     <ClInclude Include="CWinMain.h" />
     <ClInclude Include="CWinPlotter.h" />
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="IStmExp.h" />
     <ClInclude Include="Model.h" />
@@ -78,7 +79,6 @@
     <ClInclude Include="StmExpRealis.h" />
     <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="Matrix44.h" />
-    <ClInclude Include="EngineCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2DPoint.cpp" />
@@ -87,11 +87,11 @@
     <ClCompile Include="CWinMain.cpp" />
     <ClCompile Include="CWinPlotter.cpp" />
     <ClCompile Include="3DPoint.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="SegmentIndex.cpp" />
     <ClCompile Include="TriangleIndex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix44.cpp" />
-    <ClCompile Include="EngineCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WinPlotter.rc" />
