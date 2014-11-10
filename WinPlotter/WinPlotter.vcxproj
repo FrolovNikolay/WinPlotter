@@ -86,7 +86,6 @@
     <ClCompile Include="CFormula.cpp" />
     <ClCompile Include="CWinMain.cpp" />
     <ClCompile Include="CWinPlotter.cpp" />
-    <ClCompile Include="Model.cpp" />
     <ClCompile Include="3DPoint.cpp" />
     <ClCompile Include="SegmentIndex.cpp" />
     <ClCompile Include="TriangleIndex.cpp" />
