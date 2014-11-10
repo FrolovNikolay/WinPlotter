@@ -7,6 +7,7 @@ description:
 */
 
 #include "CFormula.h"
+#include "FormulaParser.h"
 
 const int indentFromBorder = 25;
 
@@ -14,6 +15,7 @@ const int indentFromBorder = 25;
 #include <Windows.h>
 #include "resource.h"
 #include <assert.h>
+#include <cmath>
 
 WNDPROC CWinMain::defButtonProc = 0;
 WNDPROC CWinMain::defMouseProc = 0;
@@ -364,28 +366,34 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 			DestroyWindow( hFormulaForm );
 			hFormulaForm = 0;
 			return TRUE;
+		default:
+			return FALSE;
 	}
-	return FALSE;
 }
 
 void CWinMain::TakeFormula()
 {
 	size_t i;
-	CFormula formula;
 	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
 	TCHAR* buff = new TCHAR[textLength + 1];
 	char* outbuff = new char[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
 	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
-	formula.SetEpsilon( 0.5 );
-	formula.SetFormula( outbuff );
+	CFormula formula = ParseFormula( std::string( outbuff ) );
 	delete[] buff;
 	delete[] outbuff;
 
 	winPlotter.testObject.Clear();
-	auto res = formula.Calculate();
-	for( int j = 0; j < res['x'].size(); j++ ) {
-		winPlotter.testObject.AddPoint( C3DPoint( res['x'][j], res['y'][j], res['z'][j] ) );
+	std::map<char, double> vars;
+	double pi = std::acos( -1 );
+	for( double x = - pi; x <= pi; x += 1. / 10. ) {
+		for( double y = - pi; y <= pi; y += 1. / 10. ) {
+			vars.clear();
+			vars['x'] = x;
+			vars['y'] = y;
+			auto res = formula.Calculate( vars );
+			winPlotter.testObject.AddPoint( C3DPoint( res['x'], res['y'], res['z'] ) );
+		}
 	}
 	winPlotter.moveX( 0 );
 }
