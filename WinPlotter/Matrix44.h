@@ -21,7 +21,7 @@ public:
 	void MultiplyRight(const CMatrix44& otherMatrix);
 
 	// Умножает матрицу на вектор-строку точки (четвётрую координату дополняет единицей)
-	C3DPoint ProjectPoint(const C3DPoint originPoint) const;
+	void TransformPoint( const C3DPoint& originPoint, C3DPoint& transformedPoint ) const;
 
 	// Получает элемент M[row][column]
 	double Get(int row, int column) const;

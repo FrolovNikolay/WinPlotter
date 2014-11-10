@@ -68,7 +68,7 @@ void CWinPlotter::UpdateScreenSize()
 {
 	RECT rect;
 	GetClientRect(handle, &rect);
-	engine.SetWindowSize(rect.right - rect.left, rect.bottom - rect.top);
+	engine.getCamera().SetWindowSize( rect.right - rect.left, rect.bottom - rect.top );
 }
 
 void CWinPlotter::OnCreate()
@@ -98,8 +98,7 @@ void CWinPlotter::OnCreate()
 	axisObject.AddSegment( 4, 5 );
 
 	// Устанавливаем позицию камеры
-	engine.SetPosition( C3DPoint( 12, 14, 6 ) );
-	engine.SetViewPoint( C3DPoint( 0, 0, 0 ) );
+	engine.getCamera().SetPosition( C3DPoint( -20, 0, 0 ) );
 }
 
 void CWinPlotter::PaintObject()
@@ -177,31 +176,31 @@ void CWinPlotter::Invalidate()
 
 void CWinPlotter::moveX( LONG times )
 {
-	engine.MoveSide( times * engineMovementFactor );
+	engine.getCamera().MoveSide( times * engineMovementFactor );
 	Invalidate();
 }
 
 void CWinPlotter::moveY( LONG times )
 {
-	engine.MoveUp( -times * engineMovementFactor );
+	engine.getCamera().MoveUp( -times * engineMovementFactor );
 	Invalidate();
 }
 
 void CWinPlotter::rotateX( LONG times )
 {
-	engine.RotateSide(times * engineRotationFactor);
+	// engine.getCamera().RotateSide( times * engineRotationFactor );
 	Invalidate();
 }
 
 void CWinPlotter::rotateY( LONG times )
 {
-	engine.RotateUp(times * engineRotationFactor);
+	// engine.getCamera().RotateUp( times * engineRotationFactor );
 	Invalidate();
 }
 
 void CWinPlotter::zoom( LONG times )
 {
-	engine.MoveForward( times * engineZoomFactor );
+	engine.getCamera().MoveForward( times * engineZoomFactor );
 	Invalidate();
 }
 

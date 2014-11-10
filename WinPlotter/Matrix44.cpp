@@ -69,12 +69,11 @@ void CMatrix44::MultiplyRight(const CMatrix44& otherMatrix) {
 	}
 }
 
-C3DPoint CMatrix44::ProjectPoint(const C3DPoint originPoint) const {
-	C3DPoint resultPoint;
-	resultPoint.X = elements[0][0] * originPoint.X + elements[1][0] * originPoint.Y + elements[2][0] * originPoint.Z + elements[3][0];
-	resultPoint.Y = elements[0][1] * originPoint.X + elements[1][1] * originPoint.Y + elements[2][1] * originPoint.Z + elements[3][1];
-	resultPoint.Z = elements[0][2] * originPoint.X + elements[1][2] * originPoint.Y + elements[2][2] * originPoint.Z + elements[3][2];
-	return resultPoint;
+void CMatrix44::TransformPoint( const C3DPoint& originPoint, C3DPoint& transformedPoint ) const
+{
+	transformedPoint.X = 1.0f * elements[ 0 ][ 0 ] * originPoint.X + elements[ 1 ][ 0 ] * originPoint.Y + elements[ 2 ][ 0 ] * originPoint.Z + elements[ 3 ][ 0 ];
+	transformedPoint.Y = 1.0f * elements[ 0 ][ 1 ] * originPoint.X + elements[ 1 ][ 1 ] * originPoint.Y + elements[ 2 ][ 1 ] * originPoint.Z + elements[ 3 ][ 1 ];
+	transformedPoint.Z = 1.0f * elements[ 0 ][ 2 ] * originPoint.X + elements[ 1 ][ 2 ] * originPoint.Y + elements[ 2 ][ 2 ] * originPoint.Z + elements[ 3 ][ 2 ];
 }
 
 double CMatrix44::Get(int row, int column) const {
