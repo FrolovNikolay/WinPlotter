@@ -228,7 +228,7 @@ CFormula ParseFormula( const std::string& text ) {
 	assert( spaceDimension >= 2 );
 	int plotDimension = GetPlotDimension( text );
 	std::vector<std::string> equations( 1 );
-	std::string spaces = " \t\n";
+	std::string spaces = " \t\n\r";
 	for( int i = 0; i < text.size(); ++i ) {
 		if( spaces.find( text[i] ) != std::string::npos ) {
 			continue;

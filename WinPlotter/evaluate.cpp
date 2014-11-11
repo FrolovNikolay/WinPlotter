@@ -1,3 +1,4 @@
+//Автор: Орлов Никита
 #pragma once
 #include <queue>
 #include <utility>
@@ -12,9 +13,9 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 {
 	try {
 		std::stringstream ss;
-		for( auto &item : data ) {
-			if( item != '\r' ) {
-				ss << item;
+		for( int i = 0; i < data.size(); i++ ) {
+			if( data[i] != '\r' ) {
+				ss << data[i];
 			}
 		}
 		std::string strFormula, argument;
