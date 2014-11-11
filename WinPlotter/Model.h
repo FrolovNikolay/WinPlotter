@@ -38,10 +38,9 @@ public:
 	// Добавляет отрезок, соединяющий две вершины
 	void AddSegment(int firstIndex, int secondIndex)
 	{
-		if (firstIndex >= Points.size() || secondIndex >= Points.size()) {
+		if( firstIndex >= Points.size() || secondIndex >= Points.size() ) {
 			throw CModel<T>::OutOfRange();
-		}
-		else {
+		} else {
 			Segments.push_back(CSegmentIndex(firstIndex, secondIndex));
 		}
 	}

@@ -6,9 +6,8 @@ description:
 	Для корректной работы должен содержвать делегата CWinPlotter, который реализует отрисовку графика
 */
 
-#include "CFormula.h"
-#include "FormulaParser.h"
-
+#pragma once
+#include "evaluate.h"
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -379,20 +378,25 @@ void CWinMain::TakeFormula()
 	char* outbuff = new char[textLength + 1];
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
 	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
-	CFormula formula = ParseFormula( std::string( outbuff ) );
+	std::string data( outbuff );
+	CGraphBuilder builder;
+	if( !builder.buildPointGrid( data ) ) {
+		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK );
+	} else {
+		winPlotter.testObject.Clear();
+		const std::vector< C3DPoint >& points = builder.GetPoints();
+		const std::vector< std::pair< int, int > >& segmentsIds = builder.GetSegments();
+		for( int j = 0; j < points.size(); j++ ) {
+			winPlotter.testObject.AddPoint( points[j] );
+		}
+		for( int j = 0; j < segmentsIds.size(); j++ ) {
+			winPlotter.testObject.AddSegment( segmentsIds[j].first, segmentsIds[j].second );
+		}
+		winPlotter.moveX( 0 );
+	}
+
 	delete[] buff;
 	delete[] outbuff;
-
-	winPlotter.testObject.Clear();
-	std::map<char, double> vars;
-	double pi = std::acos( -1 );
-	for( double t = - 3 * pi; t <= 3 * pi; t += 1. / 10. ) {
-		vars.clear();
-		vars['t'] = t;
-		auto res = formula.Calculate( vars );
-		winPlotter.testObject.AddPoint( C3DPoint( res['x'], res['y'], res['z'] ) );
-	}
-	winPlotter.moveX( 0 );
 }
 
 LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )

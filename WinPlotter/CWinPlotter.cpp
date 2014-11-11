@@ -131,7 +131,7 @@ void CWinPlotter::PaintObject()
 	HBRUSH currentBrush = ( HBRUSH )::SelectObject( currentDC, pointBrush );
 	// Вершины
 	for (auto point = renderedObject.Points.begin(); point != renderedObject.Points.end(); point++) {
-		Ellipse( currentDC, point->X - 5, point->Y - 5, point->X + 5, point->Y + 5);
+		Ellipse( currentDC, point->X - 1, point->Y - 1, point->X + 1, point->Y + 1);
 	}
 
 	// Отрезки

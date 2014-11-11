@@ -70,12 +70,15 @@
     <ClInclude Include="CWinMain.h" />
     <ClInclude Include="CWinPlotter.h" />
     <ClInclude Include="Enums.h" />
+    <ClInclude Include="evaluate.h" />
     <ClInclude Include="FormulaParser.h" />
+    <ClInclude Include="IStmExp.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="3DPoint.h" />
     <ClInclude Include="Operators.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SegmentIndex.h" />
+    <ClInclude Include="StmExpRealis.h" />
     <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="EngineCamera.h" />
@@ -87,6 +90,7 @@
     <ClCompile Include="CWinMain.cpp" />
     <ClCompile Include="CWinPlotter.cpp" />
     <ClCompile Include="3DPoint.cpp" />
+    <ClCompile Include="evaluate.cpp" />
     <ClCompile Include="FormulaParser.cpp" />
     <ClCompile Include="Operators.cpp" />
     <ClCompile Include="SegmentIndex.cpp" />
