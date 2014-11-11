@@ -20,11 +20,10 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 		std::string strFormula, argument;
 		std::map<char, std::pair< double, double > > args;
 		std::getline( ss, strFormula, '\n' );
-		std::regex argRegex( "(t|l|x|y|z)=\\[([\\-+]?[0-9]*\\.?[0-9]+)(;)([\\-+]?[0-9]*\\.?[0-9]+)\\]" );
+		std::regex argRegex( "((t|l|x|y|z)=\\[([\\-+]?[0-9]*\\.?[0-9]+)(;)([\\-+]?[0-9]*\\.?[0-9]+)\\])" );
+		std::regex epsRegex( "(eps=([0-9]*\\.?[0-9]+))" );
 		while( std::getline( ss, argument ) ) {
-			if( !std::regex_match( argument, argRegex ) ) {
-				return false;
-			} else {
+			if( std::regex_match( argument, argRegex ) ) {
 				int firstArgEnd = 3;
 				while( argument[firstArgEnd] != ';' ) {
 					firstArgEnd++;
@@ -35,7 +34,15 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 				}
 				double lb = std::stod( argument.substr( 3, firstArgEnd - 3 ) ); //left bound from arg template
 				double rb = std::stod( argument.substr( firstArgEnd + 1, secondArgEnd - firstArgEnd ) ); //right bound arg template
+				if( lb > rb ) { //опасный момент нужно ли производить сравнение с eps?
+					return false;
+				}
 				args[argument[0]] = std::make_pair( lb, rb );
+			} else if( std::regex_match( argument, epsRegex ) ) {
+				std::string strEps = argument.substr( 4 );
+				this->eps = std::stod( strEps );
+			} else {
+				return false;
 			}
 		}
 
@@ -48,36 +55,33 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 		}
 
 		std::map< char, double > argToCount;
-		if( vars.size() == 1 ) { //TODO это быдлокод надо написать без 2х if-в, т.е. просто задать обход сетки. 
-			for( double gridAxis = args[vars[0]].first; gridAxis < args[vars[0]].second; gridAxis += eps ) {
-				argToCount[vars[0]] = gridAxis;
+		if( vars.size() == 1 ) { 
+			for( int i = 0; i < ( args[vars[0]].second - args[vars[0]].first ) / eps; i++ ) {
+				argToCount[vars[0]] = args[vars[0]].first + i * eps;
 				auto result = formula.Calculate( argToCount );
 				points.push_back( C3DPoint( result['x'], result['y'], result['z'] ) );
 				if( points.size() > 2 ) {
-					segments.push_back(std::make_pair(points.size() - 1, points.size() - 2) );
+					segments.push_back( std::make_pair( points.size() - 1, points.size() - 2 ) );
 				}
 			}
-		} else if( vars.size() == 2 ) {
-			for( double gridAxis1 = args[vars[0]].first; gridAxis1 < args[vars[0]].second; gridAxis1 += eps ) {
-				int iterNumber = 0;
-				for( double gridAxis2 = args[vars[1]].first; gridAxis2 < args[vars[1]].second; gridAxis2 += eps ) {
-					iterNumber++;
-					argToCount[vars[0]] = gridAxis1;
-					argToCount[vars[1]] = gridAxis2;
+		} else if( vars.size() == 2 ) {//TODO сделать циклы для argToCount
+			int secondAxisSize = ( args[vars[1]].second - args[vars[1]].first ) / eps; //не очень красиво вносить это в циклы.
+			int firstAxisSize = ( args[vars[0]].second - args[vars[0]].first ) / eps;
+			for( int i = 0; i < firstAxisSize; i++ ) {
+				for( int j = 0; j < secondAxisSize; j++ ) {
+					argToCount[vars[0]] = args[vars[0]].first + i * eps;
+					argToCount[vars[1]] = args[vars[1]].first + j * eps;
 					auto result = formula.Calculate( argToCount );
-					iterNumber++;
 					points.push_back( C3DPoint( result['x'], result['y'], result['z'] ) );
-					if( points.size() > 2 ) {
-						//соединяем все точки, которые лежат на одной прямой, параллельной оси сетки.
+					if( j > 0 ) { //соединили соседние точки на одной оси
 						segments.push_back( std::make_pair( points.size() - 1, points.size() - 2 ) );
 					}
+					if( i > 0 ) { //соединили соседние точки на другой оси
+						segments.push_back( std::make_pair( points.size() - 1, points.size() - secondAxisSize - 1 ) );
+					}
 				}
-				//if( points.size() > 0 ) {
-				//	for( int p = 1; p < iterNumber; p++ ) {
-				//		segments.push_back( std::make_pair( points.size() - 1 - p, points.size() - 1 - p * 2) );
-				//	}
-				//}
 			}
+			
 		} else {
 			return false;
 		}
