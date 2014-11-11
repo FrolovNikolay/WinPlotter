@@ -386,14 +386,11 @@ void CWinMain::TakeFormula()
 	winPlotter.testObject.Clear();
 	std::map<char, double> vars;
 	double pi = std::acos( -1 );
-	for( double x = - pi; x <= pi; x += 1. / 10. ) {
-		for( double y = - pi; y <= pi; y += 1. / 10. ) {
-			vars.clear();
-			vars['x'] = x;
-			vars['y'] = y;
-			auto res = formula.Calculate( vars );
-			winPlotter.testObject.AddPoint( C3DPoint( res['x'], res['y'], res['z'] ) );
-		}
+	for( double t = - 3 * pi; t <= 3 * pi; t += 1. / 10. ) {
+		vars.clear();
+		vars['t'] = t;
+		auto res = formula.Calculate( vars );
+		winPlotter.testObject.AddPoint( C3DPoint( res['x'], res['y'], res['z'] ) );
 	}
 	winPlotter.moveX( 0 );
 }

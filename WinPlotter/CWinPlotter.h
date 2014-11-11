@@ -1,12 +1,10 @@
 ﻿#pragma once
 #include "Windows.h"
-#include "Engine.h"
+#include "EngineCamera.h"
 #include "Model.h"
 
 class CWinPlotter {
 public:
-	CWinPlotter() {};
-
 	// Трёхмерный примитив, который будет рисоваться на экране
 	C3DModel testObject;
 
@@ -35,8 +33,7 @@ private:
 	HWND handle;
 
 	// Экземпляр движка, который будет заниматься рендером объекта
-	// CEngineCamera engine;
-	CEngine engine;
+	CEngineCamera engine;
 	// Коэффициент, с которым будет приближаться/удаляться объект
 	const double engineZoomFactor = 0.03f;
 	// Коэффициент, с которым будет вращаться объект

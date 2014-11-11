@@ -13,16 +13,13 @@ namespace {
 	int GetSpaceDimension( const std::string& text ) 
 	{
 		int res = 3;
-		if( text.find( 'x' ) == std::string::npos )
-		{
+		if( text.find( 'x' ) == std::string::npos ) {
 			res--;
 		}
-		if( text.find( 'y' ) == std::string::npos )
-		{
+		if( text.find( 'y' ) == std::string::npos ) {
 			res--;
 		}
-		if( text.find( 'z' ) == std::string::npos )
-		{
+		if( text.find( 'z' ) == std::string::npos ) {
 			res--;
 		}
 		return res;

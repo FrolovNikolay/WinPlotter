@@ -61,7 +61,7 @@ void C3DPoint::operator/=(double value)
 }
 
 double C3DPoint::length() const {
-	return sqrt( X * X + Y * Y + Z * Z );
+	return sqrt(X * X + Y * Y + Z * Z);
 }
 
 C3DPoint C3DPoint::normalize() const {
@@ -69,7 +69,7 @@ C3DPoint C3DPoint::normalize() const {
 	if ( len < 1e-9 ) {
 		throw C3DPoint::CNullLengthException();
 	}
-	return (*this) / len;
+	return C3DPoint(X / len, Y / len, Z / len);
 }
 
 C3DPoint C3DPoint::cross(const C3DPoint& otherPoint) const
